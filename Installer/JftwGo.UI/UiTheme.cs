@@ -20,12 +20,13 @@ namespace JftwGo.UI
         public static readonly Color CardBorder = Color.FromArgb(0xE2, 0xE5, 0xE9);
         public static readonly Color HeadActive = Color.FromArgb(0xEC, 0xF3, 0xFB);
 
-        public static Font FontNormal { get { return new Font("微软雅黑", 9F); } }
-        public static Font FontTitle { get { return new Font("微软雅黑", 15F, FontStyle.Bold); } }
-        public static Font FontSubTitle { get { return new Font("微软雅黑", 11F); } }
-        public static Font FontSmall { get { return new Font("微软雅黑", 8.5F); } }
-        public static Font FontButton { get { return new Font("微软雅黑", 9F); } }
-        public static Font FontMono { get { return new Font("Consolas", 9F); } }
+        // 全部使用内嵌思源黑体（SIL OFL），不使用微软雅黑/Consolas 等有商用授权的字体。
+        public static Font FontNormal { get { return FontLoader.Create(9F); } }
+        public static Font FontTitle { get { return FontLoader.Create(15F, FontStyle.Bold); } }
+        public static Font FontSubTitle { get { return FontLoader.Create(11F); } }
+        public static Font FontSmall { get { return FontLoader.Create(8.5F); } }
+        public static Font FontButton { get { return FontLoader.Create(9F); } }
+        public static Font FontMono { get { return FontLoader.Create(9F); } }
 
         /// <summary>把窗体配置为高 DPI 友好的样式。</summary>
         public static void PrepareForm(Form form)

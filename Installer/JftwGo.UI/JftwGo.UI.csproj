@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UiTheme.cs" />
+    <Compile Include="FontLoader.cs" />
     <Compile Include="Controls\ResourceCard.cs" />
     <Compile Include="Controls\ResourceBrowser.cs" />
     <Compile Include="Controls\LogPanel.cs" />

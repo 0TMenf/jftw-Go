@@ -68,6 +68,15 @@ dotnet build jftwGo.sln -c Release
 - 运行时在向导窗口顶部右侧的下拉框切换语言，选择后自动重启以重建全部界面文本。
 - `lang/` 目录随程序输出到 exe 同级目录，可直接编辑 YAML 调整措辞或新增语言（新增后需在下拉框代码 `langCodes` 数组中登记）。YAML 为扁平 `key: value`，`{0}` 为占位符，`\n` 为换行。
 
+## 内置字体
+
+界面统一使用**思源黑体（Noto Sans SC）**，以 SIL Open Font License 1.1 开源，可合法随软件分发，规避微软雅黑等系统字体的商用授权风险。
+
+- 字体文件：`fonts/NotoSansSC-Regular.ttf`（由可变字体固定为 wght=400 静态实例，保留全部字符，约 10 MB），许可证见 `fonts/OFL.txt`。
+- 构建后复制到 exe 同级 `fonts/` 目录，通过 GDI `PrivateFontCollection` 私有加载，**无需在系统中安装字体**。
+- 字体缺失或损坏时，自动回退到系统 sans 字体，程序仍可正常运行。
+- 如需重新生成字体文件：`python tools/slim_font.py`（依赖 fonttools；输入为 Noto Sans SC 可变 TTF）。
+
 ## API 状态
 
 资源接口 `https://jftw.pinkoc.top/api/jftwGo/` 由服务端提供，当前**尚未就绪**。客户端已实现超时/重试/本地缓存回退/解析容错；API 上线后无需改动客户端即可接入，联调待接口就绪后进行。
