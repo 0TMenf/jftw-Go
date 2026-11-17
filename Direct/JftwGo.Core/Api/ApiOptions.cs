@@ -1,11 +1,12 @@
 using System;
+using System.Configuration;
 
 namespace JftwGo.Core.Api
 {
-    /// <summary>API 客户端配置。</summary>
+    /// <summary>API 客户端配置。Endpoint/ApiOrigin 从 exe.config 的 appSettings 读取，未配置则用默认值。</summary>
     public class ApiOptions
     {
-        /// <summary>资源列表接口地址。</summary>
+        /// <summary>资源列表接口地址（可精确到某个 JSON 文件 URL）。</summary>
         public string Endpoint { get; set; }
 
         /// <summary>单次请求超时。</summary>
@@ -22,11 +23,21 @@ namespace JftwGo.Core.Api
 
         public ApiOptions()
         {
-            Endpoint = "https://jftw.pinkoc.top/api/jftwGo/";
+            Endpoint = Read("ApiEndpoint", "https://jftw.pinkoc.top/api/jftwGo/");
             Timeout = TimeSpan.FromSeconds(15);
             MaxRetries = 3;
             RetryBaseDelay = TimeSpan.FromMilliseconds(600);
-            ApiOrigin = "https://jftw.pinkoc.top";
+            ApiOrigin = Read("ApiOrigin", "https://jftw.pinkoc.top");
+        }
+
+        private static string Read(string key, string fallback)
+        {
+            try
+            {
+                string v = ConfigurationManager.AppSettings[key];
+                return string.IsNullOrWhiteSpace(v) ? fallback : v.Trim();
+            }
+            catch { return fallback; }
         }
 
         public static ApiOptions Default { get { return new ApiOptions(); } }

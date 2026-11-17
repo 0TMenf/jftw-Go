@@ -77,9 +77,25 @@ dotnet build jftwGo.sln -c Release
 - 字体缺失或损坏时，自动回退到系统 sans 字体，程序仍可正常运行。
 - 如需重新生成字体文件：`python tools/slim_font.py`（依赖 fonttools；输入为 Noto Sans SC 可变 TTF）。
 
-## API 状态
+## API 与 JSON 文件
 
-资源接口 `https://jftw.pinkoc.top/api/jftwGo/` 由服务端提供，当前**尚未就绪**。客户端已实现超时/重试/本地缓存回退/解析容错；API 上线后无需改动客户端即可接入，联调待接口就绪后进行。
+客户端从一个 URL 拉取资源列表 JSON，地址在 exe 同级 `*.exe.config` 的 `appSettings` 中配置：
+
+```xml
+<add key="ApiEndpoint" value="https://jftw.pinkoc.top/api/jftwGo/" />
+<add key="ApiOrigin" value="https://jftw.pinkoc.top" />
+```
+
+**"JSON 文件名填什么"**：
+- `ApiEndpoint` 填的是**完整 URL**，不是本地文件名。它既可以是接口路径（如 `/api/jftwGo/`，由后端返回 JSON），也可以直接指向一个静态文件。
+- 若用静态 JSON 文件，推荐命名为 **`resources.json`**，并把 `ApiEndpoint` 填成该文件的完整地址，例如：
+  `https://jftw.pinkoc.top/api/jftwGo/resources.json`
+- 可直接把 `samples/resources.json` 作为模板放到服务器对应位置，按实际资源修改内容。
+- `ApiOrigin` 是相对图标 URL（以 `/` 开头）的拼接基准域名。
+
+JSON 结构样例见 `samples/resources.json`（顶层 `schemaVersion` / `generatedAt` / `resources`，其中 `resources` 含 `official.stable|preview|dev`、`historical[]`、`community[]`、`games[]`）。
+
+客户端已实现超时/重试/本地缓存回退/解析容错；接口就绪后改 config 即可接入，**无需重新编译**。当前接口尚未就绪，联调待后端完成。
 
 ## 许可证
 

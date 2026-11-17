@@ -60,6 +60,8 @@ U:\
 
 语言包位于 `lang/`（`zh_cn` 简体、`zh_tw` 繁体、`zh_hk` 繁体香港），构建后复制到 exe 同级的 `lang/` 目录。所有 UI 文案均通过本地化 key 从 YAML 读取。向导窗口右上角可切换语言，选择后自动重启生效；选择保存在 `%LocalAppData%\jftwGo\language.txt`。
 
-## 样例数据
+## API 与样例数据
 
-`samples/resources.sample.json` 为资源列表契约样例。
+资源列表 JSON 地址在 exe 同级 `*.exe.config` 的 `ApiEndpoint` 中配置（填完整 URL）。若用静态文件，推荐命名 **`resources.json`**，例如填 `https://jftw.pinkoc.top/api/jftwGo/resources.json`。`ApiOrigin` 为相对图标 URL 的基准域名。改 config 即可生效，无需重新编译。
+
+`samples/resources.json` 为可直接部署的模板，`samples/resources.sample.json` 为带注释说明的样例。
