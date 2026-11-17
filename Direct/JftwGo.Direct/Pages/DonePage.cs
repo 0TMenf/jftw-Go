@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using JftwGo.UI;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Direct.Pages
 {
     public class DonePage : WizardPage
@@ -13,7 +15,7 @@ namespace JftwGo.Direct.Pages
         private readonly Label _lblDetail;
         private readonly Button _btnOpen;
 
-        public override string PageTitle { get { return "安装完成"; } }
+        public override string PageTitle { get { return L.Get("done.title"); } }
         public override bool CanGoNext { get { return true; } }
 
         public DonePage(DirectContext ctx)
@@ -25,7 +27,7 @@ namespace JftwGo.Direct.Pages
 
             var title = new Label
             {
-                Text = "jftw Go 已安装完成",
+                Text = L.Get("done.heading"),
                 Font = UiTheme.FontTitle,
                 ForeColor = UiTheme.Success,
                 Dock = DockStyle.Top,
@@ -41,7 +43,7 @@ namespace JftwGo.Direct.Pages
             };
 
             var bar = new Panel { Dock = DockStyle.Bottom, Height = 44 };
-            _btnOpen = UiTheme.MakeButton("打开安装目录", false);
+            _btnOpen = UiTheme.MakeButton(L.Get("done.openDir"), false);
             _btnOpen.Location = new Point(0, 6);
             _btnOpen.Click += (s, e) => OpenFolder();
             bar.Controls.Add(_btnOpen);
@@ -56,11 +58,10 @@ namespace JftwGo.Direct.Pages
         {
             var res = _ctx.SelectedResource;
             _lblDetail.Text = string.Format(
-                "资源：{0}\n安装目录：{1}\n\n" +
-                "{2}",
-                res == null ? "未知" : res.ToString(),
+                L.Get("done.body") + "{2}",
+                res == null ? L.Get("common.unknown") : res.ToString(),
                 _ctx.InstallDir,
-                _ctx.LaunchAfterInstall ? "已尝试启动 jftw Go。" : "未自动启动，可从安装目录手动运行。");
+                _ctx.LaunchAfterInstall ? L.Get("done.launched") : L.Get("done.notLaunched"));
             if (Owner != null) Owner.UpdateNextButton();
         }
 

@@ -2,6 +2,8 @@ using System.Windows.Forms;
 using JftwGo.UI.Controls;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Direct.Pages
 {
     /// <summary>资源选择页（与 Installer 共用 ResourceBrowser 组件）。</summary>
@@ -11,7 +13,7 @@ namespace JftwGo.Direct.Pages
         private readonly ResourceBrowser _browser;
         private bool _entered;
 
-        public override string PageTitle { get { return "选择 jftw Go 资源"; } }
+        public override string PageTitle { get { return L.Get("res.title"); } }
 
         public override bool CanGoNext
         {

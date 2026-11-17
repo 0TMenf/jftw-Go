@@ -4,6 +4,8 @@ using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Core.Packaging
 {
     /// <summary>
@@ -43,7 +45,7 @@ namespace JftwGo.Core.Packaging
                         string rootFull = Path.GetFullPath(targetDir);
                         // 防止 zip slip 路径穿越
                         if (!full.StartsWith(rootFull, StringComparison.OrdinalIgnoreCase))
-                            throw new InvalidDataException("压缩包包含非法路径：" + entry.FullName);
+                            throw new InvalidDataException(L.Format("package.illegalPath", entry.FullName));
 
                         if (string.IsNullOrEmpty(entry.Name))
                         {

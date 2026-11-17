@@ -8,6 +8,8 @@ using JftwGo.Core.Usb;
 using JftwGo.Installer.Pages;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Installer
 {
     /// <summary>向导内各页面共享的上下文。</summary>
@@ -36,7 +38,7 @@ namespace JftwGo.Installer
         public FrmMain(ILogger logger, ApiClient api, IconCache icons)
         {
             Context = new InstallContext { Logger = logger, Api = api, Icons = icons };
-            Text = "jftw Go Installer — U 盘启动盘制作器";
+            Text = L.Get("app.title");
 
             _welcome = new WelcomePage();
             _resource = new ResourcePage(Context);
@@ -54,7 +56,7 @@ namespace JftwGo.Installer
 
             _write.OnFinished = () =>
             {
-                SetNextText("完成");
+                SetNextText(L.Get("common.finish"));
                 SetNextEnabled(true);
             };
             Start();

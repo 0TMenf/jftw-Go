@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.UI.Wizard
 {
     /// <summary>
@@ -18,6 +20,8 @@ namespace JftwGo.UI.Wizard
         private readonly Button _btnBack;
         private readonly Button _btnNext;
         private readonly Button _btnCancel;
+        private ComboBox _langCombo;
+        private bool _loadingLanguage;
         private int _index = -1;
         private bool _navigating;
 
@@ -53,10 +57,39 @@ namespace JftwGo.UI.Wizard
             var line = new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = UiTheme.CardBorder };
             header.Controls.Add(line);
 
+            // 语言切换：选择后保存并重启，确保所有页面文本以新语言重建
+            _langCombo = new ComboBox
+            {
+                Dock = DockStyle.Right,
+                Width = 150,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                FlatStyle = FlatStyle.Flat,
+                Font = UiTheme.FontSmall,
+                Margin = new Padding(0, 14, 18, 0)
+            };
+            _langCombo.Items.AddRange(new object[] { "简体中文", "繁體中文", "繁體中文(香港)" });
+            string[] langCodes = { "zh_cn", "zh_tw", "zh_hk" };
+            int sel = Array.IndexOf(langCodes, L.Language);
+            _loadingLanguage = true;
+            _langCombo.SelectedIndex = sel < 0 ? 0 : sel;
+            _loadingLanguage = false;
+            _langCombo.SelectedIndexChanged += (s, e) =>
+            {
+                if (_loadingLanguage || _langCombo.SelectedIndex < 0) return;
+                string code = langCodes[_langCombo.SelectedIndex];
+                if (string.Equals(code, L.Language, StringComparison.OrdinalIgnoreCase)) return;
+                L.SetLanguage(code);
+                Application.Restart();
+            };
+            header.Controls.Add(_langCombo);
+
             var footer = new Panel { Dock = DockStyle.Bottom, Height = 56, BackColor = UiTheme.Surface };
-            _btnCancel = UiTheme.MakeButton("取消", false);
-            _btnBack = UiTheme.MakeButton("上一步", false);
-            _btnNext = UiTheme.MakeButton("下一步", true);
+            _btnCancel = UiTheme.MakeButton(L.Get("common.cancel"), false);
+            _btnCancel.Tag = "lang:common.cancel";
+            _btnBack = UiTheme.MakeButton(L.Get("common.back"), false);
+            _btnBack.Tag = "lang:common.back";
+            _btnNext = UiTheme.MakeButton(L.Get("common.next"), true);
+            _btnNext.Tag = "lang:common.next";
 
             _btnCancel.Click += (s, e) => OnCancelClicked();
             _btnBack.Click += (s, e) => GoBack();
@@ -120,7 +153,7 @@ namespace JftwGo.UI.Wizard
             var current = _pages[_index];
             if (!current.CanGoNext)
             {
-                MessageBox.Show(this, "请先完成当前步骤的必填项。", "提示",
+                MessageBox.Show(this, L.Get("wizard.required"), L.Get("wizard.tipCaption"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -159,11 +192,12 @@ namespace JftwGo.UI.Wizard
                 page.Visible = true;
                 page.BringToFront();
                 _lblTitle.Text = page.PageTitle;
-                _lblStep.Text = "步骤 " + (index + 1) + " / " + _pages.Count;
+                _lblStep.Text = L.Format("wizard.step", index + 1, _pages.Count);
 
                 _btnBack.Enabled = index > 0;
                 bool last = index == _pages.Count - 1;
-                _btnNext.Text = last ? "完成" : "下一步";
+                _btnNext.Text = last ? L.Get("common.finish") : L.Get("common.next");
+                _btnNext.Tag = last ? "lang:common.finish" : "lang:common.next";
                 _btnNext.Enabled = page.CanGoNext;
                 page.OnEnter();
                 UpdateNextButton();
@@ -183,7 +217,7 @@ namespace JftwGo.UI.Wizard
 
         protected virtual void OnCancelClicked()
         {
-            if (MessageBox.Show(this, "确定要退出向导吗？", "确认退出",
+            if (MessageBox.Show(this, L.Get("wizard.exitConfirm"), L.Get("wizard.exitCaption"),
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 Close();
         }
@@ -203,12 +237,12 @@ namespace JftwGo.UI.Wizard
 
         public static void ShowError(Form owner, string message)
         {
-            MessageBox.Show(owner, message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(owner, message, L.Get("wizard.errorCaption"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         public static void ShowInfo(Form owner, string message)
         {
-            MessageBox.Show(owner, message, "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(owner, message, L.Get("wizard.tipCaption"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

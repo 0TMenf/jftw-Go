@@ -3,6 +3,8 @@ using System.IO;
 using System.Security.Cryptography;
 using JftwGo.Core.Models;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Core.Verify
 {
     /// <summary>文件完整性校验：按 ChecksumInfo 指定算法计算并比对。</summary>
@@ -36,7 +38,7 @@ namespace JftwGo.Core.Verify
                 {
                     if (hash == null)
                     {
-                        result.ErrorMessage = "不支持的校验算法：" + checksum.Algorithm;
+                        result.ErrorMessage = L.Format("checksum.unsupported", checksum.Algorithm);
                         return result;
                     }
                     using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -48,11 +50,11 @@ namespace JftwGo.Core.Verify
                 result.Success = string.Equals(result.Expected, result.Actual,
                     StringComparison.OrdinalIgnoreCase);
                 if (!result.Success)
-                    result.ErrorMessage = "校验和不匹配：期望 " + result.Expected + "，实际 " + result.Actual;
+                    result.ErrorMessage = L.Format("checksum.mismatch", result.Expected, result.Actual);
             }
             catch (Exception ex)
             {
-                result.ErrorMessage = "校验失败：" + ex.Message;
+                result.ErrorMessage = L.Format("checksum.fail", ex.Message);
             }
             return result;
         }

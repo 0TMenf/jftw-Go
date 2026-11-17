@@ -3,6 +3,8 @@ using JftwGo.Core.Models;
 using JftwGo.UI.Controls;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Installer.Pages
 {
     /// <summary>资源选择页：嵌入共享 ResourceBrowser，选中后写入上下文。</summary>
@@ -11,7 +13,7 @@ namespace JftwGo.Installer.Pages
         private readonly InstallContext _ctx;
         private readonly ResourceBrowser _browser;
 
-        public override string PageTitle { get { return "选择 jftw Go 资源"; } }
+        public override string PageTitle { get { return L.Get("res.title"); } }
 
         public override bool CanGoNext
         {

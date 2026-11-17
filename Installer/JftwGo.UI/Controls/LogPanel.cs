@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using JftwGo.Core.Logging;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.UI.Controls
 {
     /// <summary>可展开的日志区：一个折叠按钮 + 多行只读文本框，订阅 ILogger 事件。</summary>
@@ -17,7 +19,7 @@ namespace JftwGo.UI.Controls
             BackColor = UiTheme.Page;
             _toggle = new Button
             {
-                Text = "展开日志 ▾",
+                Text = L.Get("log.expand"),
                 Font = UiTheme.FontSmall,
                 FlatStyle = FlatStyle.Flat,
                 BackColor = UiTheme.Surface,
@@ -50,7 +52,7 @@ namespace JftwGo.UI.Controls
         {
             _expanded = !_expanded;
             Height = _expanded ? 180 : 28;
-            _toggle.Text = _expanded ? "收起日志 ▴" : "展开日志 ▾";
+            _toggle.Text = _expanded ? L.Get("log.collapse") : L.Get("log.expand");
         }
 
         public void Attach(ILogger logger)

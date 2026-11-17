@@ -1,5 +1,7 @@
 using System.Windows.Forms;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.UI.Wizard
 {
     /// <summary>
@@ -11,7 +13,7 @@ namespace JftwGo.UI.Wizard
         public WizardForm Owner { get; set; }
 
         /// <summary>页面标题（显示在向导顶部）。</summary>
-        public virtual string PageTitle { get { return "步骤"; } }
+        public virtual string PageTitle { get { return L.Get("wizard.defaultPageTitle"); } }
 
         /// <summary>进入页面时调用（可异步触发数据加载）。</summary>
         public virtual void OnEnter() { }

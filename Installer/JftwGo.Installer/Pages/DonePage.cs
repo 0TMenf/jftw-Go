@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using JftwGo.UI;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Installer.Pages
 {
     public class DonePage : WizardPage
@@ -10,7 +12,7 @@ namespace JftwGo.Installer.Pages
         private readonly InstallContext _ctx;
         private readonly Label _lblDetail;
 
-        public override string PageTitle { get { return "制作完成"; } }
+        public override string PageTitle { get { return L.Get("done.title"); } }
         public override bool CanGoNext { get { return true; } }
 
         public DonePage(InstallContext ctx)
@@ -22,7 +24,7 @@ namespace JftwGo.Installer.Pages
 
             var title = new Label
             {
-                Text = "U 盘资源部署完成",
+                Text = L.Get("done.heading"),
                 Font = UiTheme.FontTitle,
                 ForeColor = UiTheme.Success,
                 Dock = DockStyle.Top,
@@ -39,7 +41,7 @@ namespace JftwGo.Installer.Pages
 
             var tip = new Label
             {
-                Text = "你可以安全拔出 U 盘，或返回重新制作另一块。",
+                Text = L.Get("done.tip"),
                 Font = UiTheme.FontSmall,
                 ForeColor = UiTheme.TextSecondary,
                 Dock = DockStyle.Bottom,
@@ -61,19 +63,19 @@ namespace JftwGo.Installer.Pages
             if (dep != null)
             {
                 extra = string.Format(
-                    "\n整合包目录：jftw_Go_Assets\\version\\{0}\n",
+                    L.Get("done.packageDir"),
                     res == null ? "-" : UsbWriter.GetPackageFolderName(res));
                 if (dep.LauncherFound)
                     extra += (dep.ShortcutCreated && dep.BatCreated
-                        ? "根目录已生成 jftw Go.lnk 快捷方式与 jftw Go.bat 启动脚本。\n"
-                        : "启动入口创建不完整，请检查 U 盘根目录。\n");
+                        ? L.Get("done.shortcutOk")
+                        : L.Get("done.shortcutBad"));
                 else
                     extra += (dep.Warning ?? "") + "\n";
             }
             _lblDetail.Text = string.Format(
-                "资源：{0}\n目标 U 盘：{1}\n{2}\nU 盘上的其它文件未被改动，可安全拔出。",
-                res == null ? "未知" : res.ToString(),
-                usb == null ? "未知" : usb.DriveLetter,
+                L.Get("done.body"),
+                res == null ? L.Get("common.unknown") : res.ToString(),
+                usb == null ? L.Get("common.unknown") : usb.DriveLetter,
                 extra);
             if (Owner != null) Owner.UpdateNextButton();
         }

@@ -7,6 +7,8 @@ using JftwGo.Core.Models;
 using JftwGo.Direct.Pages;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Direct
 {
     /// <summary>Direct 向导共享上下文。</summary>
@@ -34,7 +36,7 @@ namespace JftwGo.Direct
         public FrmMain(ILogger logger, ApiClient api, IconCache icons)
         {
             Context = new DirectContext { Logger = logger, Api = api, Icons = icons };
-            Text = "jftw Go Direct — 在线直装";
+            Text = L.Get("app.title");
 
             _welcome = new WelcomePage();
             _resource = new ResourcePage(Context);
@@ -50,7 +52,7 @@ namespace JftwGo.Direct
 
             _install.OnFinished = () =>
             {
-                SetNextText("完成");
+                SetNextText(L.Get("common.finish"));
                 SetNextEnabled(true);
             };
             Start();

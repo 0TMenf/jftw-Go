@@ -4,6 +4,8 @@ using System.IO;
 using System.Management;
 using System.Runtime.InteropServices;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Core.Usb
 {
     /// <summary>
@@ -51,7 +53,7 @@ namespace JftwGo.Core.Usb
                         FileSystem = d.DriveFormat,
                         TotalBytes = d.TotalSize,
                         FreeBytes = d.AvailableFreeSpace,
-                        Model = "可移动磁盘"
+                        Model = L.Get("usb.removable")
                     });
                 }
             }
@@ -74,7 +76,7 @@ namespace JftwGo.Core.Usb
         private static string ResolveModel(string pnpId, string fallback)
         {
             if (!string.IsNullOrWhiteSpace(fallback)) return fallback;
-            if (string.IsNullOrWhiteSpace(pnpId)) return "USB 设备";
+            if (string.IsNullOrWhiteSpace(pnpId)) return L.Get("usb.device");
             try
             {
                 // PNPDeviceID 形如 USBSTOR\DISK&VEN_SANDISK&PROD_CRUIZER&REV...
@@ -88,7 +90,7 @@ namespace JftwGo.Core.Usb
                 }
             }
             catch { }
-            return "USB 设备";
+            return L.Get("usb.device");
         }
 
         private static string GetStr(ManagementObject mo, string name)

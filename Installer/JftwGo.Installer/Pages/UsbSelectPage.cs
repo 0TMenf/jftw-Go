@@ -6,6 +6,8 @@ using JftwGo.Core.Usb;
 using JftwGo.UI;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Installer.Pages
 {
     /// <summary>U 盘选择与检测页：显示容量、文件系统、可用空间。</summary>
@@ -17,7 +19,7 @@ namespace JftwGo.Installer.Pages
         private readonly Label _lblHint;
         private List<UsbDeviceInfo> _devices = new List<UsbDeviceInfo>();
 
-        public override string PageTitle { get { return "选择 U 盘"; } }
+        public override string PageTitle { get { return L.Get("usb.title"); } }
 
         public override bool CanGoNext
         {
@@ -33,7 +35,7 @@ namespace JftwGo.Installer.Pages
 
             var title = new Label
             {
-                Text = "检测到以下可移动磁盘：",
+                Text = L.Get("usb.detected"),
                 Font = UiTheme.FontSubTitle,
                 ForeColor = UiTheme.TextPrimary,
                 Dock = DockStyle.Top,
@@ -41,7 +43,7 @@ namespace JftwGo.Installer.Pages
             };
 
             var toolbar = new Panel { Dock = DockStyle.Top, Height = 38 };
-            var btnRefresh = UiTheme.MakeButton("重新检测", false);
+            var btnRefresh = UiTheme.MakeButton(L.Get("usb.rescan"), false);
             btnRefresh.Location = new Point(0, 4);
             btnRefresh.Click += (s, e) => Scan();
             toolbar.Controls.Add(btnRefresh);
@@ -58,7 +60,7 @@ namespace JftwGo.Installer.Pages
 
             _lblDetail = new Label
             {
-                Text = "尚未选择 U 盘。",
+                Text = L.Get("usb.notSelected"),
                 Font = UiTheme.FontNormal,
                 ForeColor = UiTheme.TextPrimary,
                 Dock = DockStyle.Top,
@@ -68,7 +70,7 @@ namespace JftwGo.Installer.Pages
 
             _lblHint = new Label
             {
-                Text = "提示：本工具不会格式化 U 盘，仅在盘中写入 jftw_Go_Assets 目录与启动入口。",
+                Text = L.Get("usb.hint"),
                 Font = UiTheme.FontSmall,
                 ForeColor = UiTheme.Danger,
                 Dock = DockStyle.Bottom,
@@ -98,8 +100,8 @@ namespace JftwGo.Installer.Pages
 
             _ctx.SelectedUsb = null;
             _lblDetail.Text = _devices.Count == 0
-                ? "未检测到可移动磁盘。请插入 U 盘后点击「重新检测」。"
-                : "请在上方列表中选择一个 U 盘。";
+                ? L.Get("usb.notDetected")
+                : L.Get("usb.pleaseSelect");
             _lblDetail.ForeColor = UiTheme.TextSecondary;
             if (Owner != null) Owner.UpdateNextButton();
         }
@@ -111,10 +113,10 @@ namespace JftwGo.Installer.Pages
             var d = _devices[i];
             _ctx.SelectedUsb = d;
             _lblDetail.Text = string.Format(
-                "盘符：{0}\n卷标：{1}\n文件系统：{2}\n总容量：{3}    可用空间：{4}",
+                L.Get("usb.detail"),
                 d.DriveLetter,
-                string.IsNullOrWhiteSpace(d.VolumeLabel) ? "（无）" : d.VolumeLabel,
-                string.IsNullOrWhiteSpace(d.FileSystem) ? "未知" : d.FileSystem,
+                string.IsNullOrWhiteSpace(d.VolumeLabel) ? L.Get("common.none") : d.VolumeLabel,
+                string.IsNullOrWhiteSpace(d.FileSystem) ? L.Get("common.unknown") : d.FileSystem,
                 d.CapacityText,
                 d.FreeText);
             _lblDetail.ForeColor = UiTheme.TextPrimary;

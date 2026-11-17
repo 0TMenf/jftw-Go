@@ -10,6 +10,8 @@ using JftwGo.UI;
 using JftwGo.UI.Controls;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Installer.Pages
 {
     /// <summary>制作进度页：下载 → 校验 → 清盘 → 写入，含进度条、日志、取消、失败重试。</summary>
@@ -26,7 +28,7 @@ namespace JftwGo.Installer.Pages
 
         public Action OnFinished;
 
-        public override string PageTitle { get { return "正在制作 U 盘启动盘"; } }
+        public override string PageTitle { get { return L.Get("write.title"); } }
         public override bool CanGoNext { get { return _finished; } }
 
         public WriteProgressPage(InstallContext ctx)
@@ -41,11 +43,11 @@ namespace JftwGo.Installer.Pages
             _log.Attach(ctx.Logger);
 
             var toolbar = new Panel { Dock = DockStyle.Bottom, Height = 40 };
-            _btnRetry = UiTheme.MakeButton("重试", false);
+            _btnRetry = UiTheme.MakeButton(L.Get("common.retry"), false);
             _btnRetry.Location = new Point(0, 4);
             _btnRetry.Enabled = false;
             _btnRetry.Click += (s, e) => { _ = RunAsync(); };
-            var btnCancel = UiTheme.MakeButton("取消", false);
+            var btnCancel = UiTheme.MakeButton(L.Get("common.cancel"), false);
             btnCancel.Location = new Point(96, 4);
             btnCancel.Click += (s, e) => CancelWork();
             toolbar.Controls.Add(_btnRetry);
@@ -72,7 +74,7 @@ namespace JftwGo.Installer.Pages
             if (_cts != null && !_cts.IsCancellationRequested)
             {
                 _cts.Cancel();
-                _ctx.Logger.Warn("用户取消了制作流程。");
+                _ctx.Logger.Warn(L.Get("write.userCancel"));
             }
         }
 
@@ -90,33 +92,33 @@ namespace JftwGo.Installer.Pages
             var usb = _ctx.SelectedUsb;
             if (item == null || usb == null)
             {
-                ShowFail("资源或 U 盘未选择，无法开始制作。");
+                ShowFail(L.Get("write.noSelect"));
                 return;
             }
 
             if (!UsbScanner.IsStillRemovable(usb.DriveLetter))
             {
-                ShowFail("所选 U 盘已不在位（可能被拔出），请返回重新检测。");
+                ShowFail(L.Get("write.usbGone"));
                 return;
             }
 
             if (!UsbWriter.HasEnoughSpace(usb, item.FileSize))
             {
-                ShowFail("U 盘可用空间不足，无法写入该资源。");
+                ShowFail(L.Get("write.noSpace"));
                 return;
             }
 
             try
             {
                 // 1) 下载
-                _progress.SetProgress(0, "开始下载资源…", "");
+                _progress.SetProgress(0, L.Get("write.downloading"), "");
                 _packageFile = System.IO.Path.Combine(AppPaths.DownloadDir,
                     Sanitize(item.Name) + "_" + (item.Version ?? "v") + ".pkg");
                 var downloader = new Downloader(_ctx.Logger);
                 var dlProgress = new Progress<DownloadProgressInfo>(p =>
                 {
                     _progress.SetProgress(p.Percent,
-                        p.StatusText ?? ("正在下载… " + p.FormatSize(p.BytesReceived)),
+                        p.StatusText ?? L.Format("write.downloadingFmt", p.FormatSize(p.BytesReceived)),
                         p.SpeedBytesPerSec > 0 ? FormatSpeed(p.SpeedBytesPerSec) : "");
                 });
 
@@ -129,43 +131,43 @@ namespace JftwGo.Installer.Pages
                 }
 
                 // 2) 部署资源整合包（不格式化、不清盘，按整合包分目录）
-                _progress.SetProgress(0, "正在部署资源到 U 盘…", "");
+                _progress.SetProgress(0, L.Get("write.deploying"), "");
                 var writer = new UsbWriter(_ctx.Logger);
                 var writeProgress = new Progress<int>(v =>
-                    _progress.SetProgress(v, "正在部署资源到 U 盘…", ""));
+                    _progress.SetProgress(v, L.Get("write.deploying"), ""));
                 var deploy = await writer.DeployAsync(_packageFile, usb, item, writeProgress, ct)
                     .ConfigureAwait(true);
                 if (!deploy.Success)
                 {
-                    ShowFail("部署失败：" + (deploy.Warning ?? "未知错误"));
+                    ShowFail(L.Format("write.deployFail", deploy.Warning ?? L.Get("write.unknown")));
                     return;
                 }
                 _ctx.DeployResult = deploy;
 
                 string tail = deploy.LauncherFound
-                    ? "已创建根目录快捷方式与启动脚本。"
+                    ? L.Get("write.shortcutOk")
                     : (deploy.Warning ?? "");
-                _progress.SetProgress(100, "制作完成。" + tail, "");
+                _progress.SetProgress(100, L.Format("write.done", tail), "");
                 _finished = true;
                 if (Owner != null) { Owner.SetNextEnabled(true); Owner.UpdateNextButton(); }
                 if (OnFinished != null) OnFinished();
             }
             catch (OperationCanceledException)
             {
-                _progress.SetProgress(0, "已取消。", "");
-                _ctx.Logger.Warn("制作流程已取消。");
+                _progress.SetProgress(0, L.Get("write.canceled"), "");
+                _ctx.Logger.Warn(L.Get("write.userCancel"));
                 if (Owner != null) { Owner.SetNextEnabled(false); Owner.UpdateNextButton(); }
             }
             catch (Exception ex)
             {
-                ShowFail("制作失败：" + ex.Message);
+                ShowFail(L.Format("write.fail", ex.Message));
             }
         }
 
         private void ShowFail(string message)
         {
             _ctx.Logger.Error(message);
-            _progress.SetProgress(0, "失败：" + message, "");
+            _progress.SetProgress(0, L.Format("write.failedPrefix", message), "");
             _btnRetry.Enabled = true;
             _finished = false;
             if (Owner != null) { Owner.SetNextEnabled(false); Owner.UpdateNextButton(); }

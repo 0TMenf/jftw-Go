@@ -8,6 +8,8 @@ using JftwGo.Core.Api;
 using JftwGo.Core.Icons;
 using JftwGo.Core.Models;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.UI.Controls
 {
     /// <summary>
@@ -52,7 +54,7 @@ namespace JftwGo.UI.Controls
 
             var title = new Label
             {
-                Text = "选择资源",
+                Text = L.Get("res.title"), Tag = "lang:res.title",
                 Font = UiTheme.FontSubTitle,
                 ForeColor = UiTheme.TextPrimary,
                 Dock = DockStyle.Top,
@@ -91,7 +93,8 @@ namespace JftwGo.UI.Controls
             };
 
             var toolbar = new Panel { Dock = DockStyle.Top, Height = 36 };
-            _btnRefresh = UiTheme.MakeButton("刷新列表", false);
+            _btnRefresh = UiTheme.MakeButton(L.Get("res.refresh"), false);
+            _btnRefresh.Tag = "lang:res.refresh";
             _btnRefresh.Location = new Point(0, 2);
             _btnRefresh.Click += (s, e) => { _ = LoadAsync(); };
             toolbar.Controls.Add(_btnRefresh);
@@ -122,10 +125,10 @@ namespace JftwGo.UI.Controls
 
         private void BuildHeadBar()
         {
-            AddHeadButton("官方整合包", HeadCategory.Official);
-            AddHeadButton("历史版本", HeadCategory.Historical);
-            AddHeadButton("社区开发版本", HeadCategory.Community);
-            AddHeadButton("单个游戏", HeadCategory.Games);
+            AddHeadButton(L.Get("res.head.official"), HeadCategory.Official);
+            AddHeadButton(L.Get("res.head.historical"), HeadCategory.Historical);
+            AddHeadButton(L.Get("res.head.community"), HeadCategory.Community);
+            AddHeadButton(L.Get("res.head.games"), HeadCategory.Games);
             UpdateHeadStyle();
         }
 
@@ -158,9 +161,9 @@ namespace JftwGo.UI.Controls
 
         private void BuildChannelBar()
         {
-            AddChannelButton("稳定版", OfficialChannel.Stable);
-            AddChannelButton("预览版", OfficialChannel.Preview);
-            AddChannelButton("开发版", OfficialChannel.Dev);
+            AddChannelButton(L.Get("res.channel.stable"), OfficialChannel.Stable);
+            AddChannelButton(L.Get("res.channel.preview"), OfficialChannel.Preview);
+            AddChannelButton(L.Get("res.channel.dev"), OfficialChannel.Dev);
             UpdateChannelStyle();
         }
 
@@ -226,9 +229,9 @@ namespace JftwGo.UI.Controls
             _loadCts = new CancellationTokenSource();
             var ct = _loadCts.Token;
 
-            SetStatus("正在加载资源列表…", UiTheme.TextSecondary);
+            SetStatus(L.Get("res.loading"), UiTheme.TextSecondary);
             ClearCards();
-            AddMessageCard("正在加载资源列表，请稍候…");
+            AddMessageCard(L.Get("res.loadingWait"));
 
             ResourceLoadResult result;
             try
@@ -242,18 +245,18 @@ namespace JftwGo.UI.Controls
             if (result.State == ResourceLoadState.Failed)
             {
                 _catalog = null;
-                SetStatus("加载失败", UiTheme.Danger);
+                SetStatus(L.Get("res.loadFailed"), UiTheme.Danger);
                 ClearCards();
-                AddMessageCard("资源列表加载失败：" + result.ErrorMessage + "\n可点击右上角「刷新列表」重试。", UiTheme.Danger);
+                AddMessageCard(L.Format("res.loadFailedMsg", result.ErrorMessage), UiTheme.Danger);
                 return;
             }
 
             _catalog = result.Catalog;
-            string cacheTip = result.FromCache ? "（离线缓存）" : "";
+            string cacheTip = result.FromCache ? L.Get("res.offlineCache") : "";
             if (result.State == ResourceLoadState.Empty)
-                SetStatus("资源列表为空" + cacheTip, UiTheme.TextSecondary);
+                SetStatus(L.Format("res.empty", cacheTip), UiTheme.TextSecondary);
             else
-                SetStatus("共加载资源 " + CountAll() + " 项" + cacheTip, UiTheme.TextSecondary);
+                SetStatus(L.Format("res.loadedCount", CountAll(), cacheTip), UiTheme.TextSecondary);
             RenderList();
         }
 
@@ -281,14 +284,14 @@ namespace JftwGo.UI.Controls
             ClearCards();
             if (_catalog == null)
             {
-                AddMessageCard("暂无资源，请点击「刷新列表」。", UiTheme.TextSecondary);
+                AddMessageCard(L.Get("res.emptyClick"), UiTheme.TextSecondary);
                 return;
             }
 
             List<ResourceItem> items = CurrentItems();
             if (items.Count == 0)
             {
-                AddMessageCard("该分类下暂无资源。", UiTheme.TextSecondary);
+                AddMessageCard(L.Get("res.categoryEmpty"), UiTheme.TextSecondary);
                 return;
             }
 
@@ -325,7 +328,7 @@ namespace JftwGo.UI.Controls
                         if (IsOk(item)) result.Add(item);
                         else result.Add(new ResourceItem
                         {
-                            Id = "offline-slot", Name = "该通道暂无资源", Description = "请切换通道或稍后刷新"
+                            Id = "offline-slot", Name = L.Get("res.noResSlot"), Description = L.Get("res.noResSlotDesc")
                         });
                     }
                     break;

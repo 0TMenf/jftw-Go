@@ -35,6 +35,10 @@ dotnet build jftwGo.sln -c Release
 - 高 DPI：`app.manifest` 声明 `PerMonitorV2` + `AutoScaleMode.Dpi`。
 - 日志：`%LocalAppData%\jftwGo\logs\`。
 
+## 多语言
+
+语言包位于 `lang/`（`zh_cn` 简体、`zh_tw` 繁体、`zh_hk` 繁体香港），构建后复制到 exe 同级的 `lang/` 目录。所有 UI 文案均通过本地化 key 从 YAML 读取。向导窗口右上角可切换语言，选择后自动重启生效；选择保存在 `%LocalAppData%\jftwGo\language.txt`。
+
 ## 样例数据
 
 `samples/resources.sample.json` 为资源列表契约样例。

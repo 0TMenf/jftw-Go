@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using JftwGo.Core.Logging;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Core.Icons
 {
     /// <summary>
@@ -96,14 +98,14 @@ namespace JftwGo.Core.Icons
                 Image img = BytesToImage(bytes);
                 if (img == null) return null;
                 try { File.WriteAllBytes(diskPath, bytes); }
-                catch (Exception ex) { _logger.Warn("图标写缓存失败：" + ex.Message); }
+                catch (Exception ex) { _logger.Warn(L.Format("icon.cacheFail", ex.Message)); }
                 lock (_sync) { _memory[key] = img; }
                 return img;
             }
             catch (OperationCanceledException) { throw; }
             catch (Exception ex)
             {
-                _logger.Warn("图标加载失败 " + url + "：" + ex.Message);
+                _logger.Warn(L.Format("icon.loadFail", url, ex.Message));
                 return null;
             }
         }

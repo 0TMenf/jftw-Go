@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using JftwGo.UI;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Direct.Pages
 {
     /// <summary>安装路径与启动选项页。</summary>
@@ -14,7 +16,7 @@ namespace JftwGo.Direct.Pages
         private readonly TextBox _txtPath;
         private readonly CheckBox _chkLaunch;
 
-        public override string PageTitle { get { return "选择安装位置"; } }
+        public override string PageTitle { get { return L.Get("options.title"); } }
 
         public override bool CanGoNext
         {
@@ -36,7 +38,7 @@ namespace JftwGo.Direct.Pages
 
             var title = new Label
             {
-                Text = "安装位置",
+                Text = L.Get("options.heading"),
                 Font = UiTheme.FontSubTitle,
                 ForeColor = UiTheme.TextPrimary,
                 Dock = DockStyle.Top,
@@ -50,7 +52,7 @@ namespace JftwGo.Direct.Pages
                 Width = 460,
                 Location = new Point(0, 8)
             };
-            var btnBrowse = UiTheme.MakeButton("浏览…", false);
+            var btnBrowse = UiTheme.MakeButton(L.Get("options.browse"), false);
             btnBrowse.Location = new Point(470, 6);
             btnBrowse.Click += (s, e) => Browse();
             row.Controls.Add(_txtPath);
@@ -58,7 +60,7 @@ namespace JftwGo.Direct.Pages
 
             var hint = new Label
             {
-                Text = "建议安装到非系统盘或用户目录下的独立文件夹。安装会覆盖目标目录中的同名文件。",
+                Text = L.Get("options.hint"),
                 Font = UiTheme.FontSmall,
                 ForeColor = UiTheme.TextSecondary,
                 Dock = DockStyle.Top,
@@ -67,7 +69,7 @@ namespace JftwGo.Direct.Pages
 
             _chkLaunch = new CheckBox
             {
-                Text = "安装完成后立即启动 jftw Go",
+                Text = L.Get("options.launch"),
                 Font = UiTheme.FontNormal,
                 ForeColor = UiTheme.TextPrimary,
                 Dock = DockStyle.Top,
@@ -92,7 +94,7 @@ namespace JftwGo.Direct.Pages
         {
             using (var dlg = new FolderBrowserDialog())
             {
-                dlg.Description = "选择 jftw Go 的安装目录";
+                dlg.Description = L.Get("options.folderDesc");
                 dlg.ShowNewFolderButton = true;
                 try
                 {

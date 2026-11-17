@@ -2,6 +2,8 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.UI.Controls
 {
     /// <summary>进度区：进度条 + 百分比 + 状态文本 + 速度，供下载/写入/解压复用。</summary>
@@ -37,7 +39,7 @@ namespace JftwGo.UI.Controls
             };
             _lblStatus = new Label
             {
-                Text = "准备中…",
+                Text = L.Get("progress.ready"),
                 Font = UiTheme.FontNormal,
                 ForeColor = UiTheme.TextPrimary,
                 Dock = DockStyle.Fill,

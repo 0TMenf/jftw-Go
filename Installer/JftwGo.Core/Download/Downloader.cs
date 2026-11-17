@@ -8,6 +8,8 @@ using JftwGo.Core.Logging;
 using JftwGo.Core.Models;
 using JftwGo.Core.Verify;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Core.Download
 {
     /// <summary>下载结果。</summary>
@@ -49,7 +51,7 @@ namespace JftwGo.Core.Download
             CancellationToken ct)
         {
             if (item == null || string.IsNullOrWhiteSpace(item.DownloadUrl))
-                return Fail("资源下载地址为空");
+                return Fail(L.Get("dl.emptyUrl"));
 
             string dir = Path.GetDirectoryName(targetPath);
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
@@ -61,8 +63,8 @@ namespace JftwGo.Core.Download
                 ct.ThrowIfCancellationRequested();
                 try
                 {
-                    Report(progress, 0, item.FileSize, 0, "准备下载（第 " + attempt + " 次）");
-                    _logger.Info("开始下载：" + item.Name + "（第 " + attempt + " 次）");
+                    Report(progress, 0, item.FileSize, 0, L.Format("dl.prepare", attempt));
+                    _logger.Info(L.Format("dl.start", item.Name, attempt));
 
                     await StreamDownloadAsync(item.DownloadUrl, temp, item.FileSize, progress, ct)
                         .ConfigureAwait(false);
@@ -90,7 +92,7 @@ namespace JftwGo.Core.Download
 
                     if (File.Exists(targetPath)) File.Delete(targetPath);
                     File.Move(temp, targetPath);
-                    _logger.Info("下载完成：" + targetPath);
+                    _logger.Info(L.Format("dl.done", targetPath));
 
                     var result = new DownloadResult
                     {
@@ -99,7 +101,7 @@ namespace JftwGo.Core.Download
                         Verification = verify,
                         BytesTotal = new FileInfo(targetPath).Length
                     };
-                    Report(progress, 100, result.BytesTotal, 0, verify.WasRequested ? "下载完成，校验通过" : "下载完成");
+                    Report(progress, 100, result.BytesTotal, 0, verify.WasRequested ? L.Get("dl.verified") : L.Get("dl.complete"));
                     return result;
                 }
                 catch (OperationCanceledException)
@@ -110,13 +112,13 @@ namespace JftwGo.Core.Download
                 catch (Exception ex)
                 {
                     last = ex;
-                    _logger.Warn("下载失败（第 " + attempt + "/" + _maxRetries + " 次）：" + ex.Message);
+                    _logger.Warn(L.Format("dl.retryFail", attempt, _maxRetries, ex.Message));
                     TryDelete(temp);
                     if (attempt < _maxRetries)
                         await Task.Delay(600 * attempt, ct).ConfigureAwait(false);
                 }
             }
-            return Fail("下载失败：" + (last == null ? "未知错误" : last.Message));
+            return Fail(L.Format("dl.failAll", (last == null ? L.Get("common.unknown") : last.Message)));
         }
 
         private async Task StreamDownloadAsync(

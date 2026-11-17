@@ -7,6 +7,8 @@ using JftwGo.Core.Icons;
 using JftwGo.Core.Models;
 using JftwGo.Core.Usb;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.UI.Controls
 {
     /// <summary>
@@ -83,7 +85,8 @@ namespace JftwGo.UI.Controls
                 Margin = Padding.Empty
             };
 
-            _btnSelect = UiTheme.MakeButton("选择", true);
+            _btnSelect = UiTheme.MakeButton(L.Get("res.select"), true);
+            _btnSelect.Tag = "lang:res.select";
             _btnSelect.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             _btnSelect.Click += (s, e) =>
             {
@@ -123,11 +126,11 @@ namespace JftwGo.UI.Controls
             _lblName.Text = string.IsNullOrWhiteSpace(item.Version)
                 ? item.Name
                 : item.Name + "  ·  " + item.Version;
-            _lblDesc.Text = string.IsNullOrWhiteSpace(item.Description) ? "（暂无描述）" : item.Description;
-            string size = item.FileSize.HasValue ? UsbDeviceInfo.FormatSize(item.FileSize.Value) : "未知大小";
+            _lblDesc.Text = string.IsNullOrWhiteSpace(item.Description) ? L.Get("res.noDesc") : item.Description;
+            string size = item.FileSize.HasValue ? UsbDeviceInfo.FormatSize(item.FileSize.Value) : L.Get("res.unknownSize");
             string updated = item.UpdatedAt.HasValue
-                ? item.UpdatedAt.Value.ToLocalTime().ToString("yyyy-MM-dd") : "未知时间";
-            _lblMeta.Text = size + "   |   更新于 " + updated;
+                ? item.UpdatedAt.Value.ToLocalTime().ToString("yyyy-MM-dd") : L.Get("res.unknownTime");
+            _lblMeta.Text = size + "   |   " + L.Format("res.updatedOn", updated);
 
             RenderTags(item.Tags);
             _btnSelect.Location = new Point(Math.Max(68, Width - _btnSelect.Width - 14), 44);

@@ -9,6 +9,8 @@ using JftwGo.Core.Models;
 using JftwGo.Core.Packaging;
 using JftwGo.Core.Usb;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Installer
 {
     /// <summary>
@@ -63,7 +65,7 @@ namespace JftwGo.Installer
 
             Directory.CreateDirectory(versionDir);
             Directory.CreateDirectory(packageDir);
-            _logger.Info("部署目标目录：" + packageDir);
+            _logger.Info(L.Format("writer.deployTarget", packageDir));
 
             // 释放资源包到"该整合包自己的文件夹"
             if (ArchiveExtractor.IsZip(packageFile))
@@ -83,7 +85,7 @@ namespace JftwGo.Installer
             if (string.IsNullOrEmpty(exe))
             {
                 result.LauncherFound = false;
-                result.Warning = "未在整合包中找到 " + LauncherExeName + "，资源已解压但未创建快捷方式。";
+                result.Warning = L.Format("writer.noLauncher", LauncherExeName);
                 _logger.Warn(result.Warning);
                 result.Success = true; // 资源已就位，仅快捷方式缺失
                 return result;
@@ -94,7 +96,7 @@ namespace JftwGo.Installer
             result.ShortcutCreated = CreateShortcut(Path.Combine(root, ShortcutName), exe, packageDir);
             result.BatCreated = CreateBat(Path.Combine(root, BatName), exe, packageDir);
             result.Success = true;
-            _logger.Info("部署完成，启动程序：" + exe);
+            _logger.Info(L.Format("writer.deployDone", exe));
             return result;
         }
 
@@ -124,7 +126,7 @@ namespace JftwGo.Installer
             try
             {
                 Type t = Type.GetTypeFromProgID("WScript.Shell");
-                if (t == null) throw new InvalidOperationException("系统未提供 WScript.Shell");
+                if (t == null) throw new InvalidOperationException(L.Get("writer.noWsh"));
                 object shell = Activator.CreateInstance(t);
                 object sc = t.InvokeMember("CreateShortcut", BindingFlags.InvokeMethod, null,
                     shell, new object[] { lnkPath });
@@ -133,14 +135,14 @@ namespace JftwGo.Installer
                 scType.InvokeMember("WorkingDirectory", BindingFlags.SetProperty, null, sc, new object[] { workingDir });
                 scType.InvokeMember("Arguments", BindingFlags.SetProperty, null, sc, new object[] { "" });
                 scType.InvokeMember("Description", BindingFlags.SetProperty, null, sc,
-                    new object[] { "启动 jftw Go" });
+                    new object[] { L.Get("writer.desc") });
                 scType.InvokeMember("Save", BindingFlags.InvokeMethod, null, sc, null);
-                _logger.Info("已创建快捷方式：" + lnkPath);
+                _logger.Info(L.Format("writer.lnkOk", lnkPath));
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.Warn("创建快捷方式失败：" + ex.Message);
+                _logger.Warn(L.Format("writer.lnkFail", ex.Message));
                 return false;
             }
         }
@@ -158,15 +160,15 @@ namespace JftwGo.Installer
                 var sb = new StringBuilder();
                 sb.AppendLine("@echo off");
                 sb.AppendLine("chcp 65001 >nul");
-                sb.AppendLine("rem jftw Go 启动脚本（相对路径，盘符变化仍可用）");
+                sb.AppendLine(L.Get("writer.batRemark"));
                 sb.AppendLine("start \"\" \"%~dp0" + rel + "\"");
                 File.WriteAllText(batPath, sb.ToString(), Encoding.UTF8);
-                _logger.Info("已创建启动脚本：" + batPath);
+                _logger.Info(L.Format("writer.batOk", batPath));
                 return true;
             }
             catch (Exception ex)
             {
-                _logger.Warn("创建 bat 失败：" + ex.Message);
+                _logger.Warn(L.Format("writer.batFail", ex.Message));
                 return false;
             }
         }
@@ -174,7 +176,7 @@ namespace JftwGo.Installer
         private static string ToRoot(string driveLetter)
         {
             if (string.IsNullOrWhiteSpace(driveLetter))
-                throw new ArgumentException("盘符为空");
+                throw new ArgumentException(L.Get("writer.noDrive"));
             string s = driveLetter.Trim();
             if (!s.EndsWith("\\")) s += "\\";
             return s;

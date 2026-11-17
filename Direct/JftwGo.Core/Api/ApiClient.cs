@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JftwGo.Core.Models;
 using JftwGo.Core.Logging;
 using Newtonsoft.Json;
+using JftwGo.Core.Localization;
 
 namespace JftwGo.Core.Api
 {
@@ -50,7 +51,7 @@ namespace JftwGo.Core.Api
             }
             catch (Exception ex)
             {
-                _logger.Warn("获取在线资源失败：" + ex.Message + "，尝试读取本地缓存。");
+                _logger.Warn(L.Format("api.fetchFailed", ex.Message));
                 ResourceCatalog cached;
                 if (TryLoadCache(out cached))
                 {
@@ -81,8 +82,8 @@ namespace JftwGo.Core.Api
                         response.EnsureSuccessStatusCode();
                         string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                         if (string.IsNullOrWhiteSpace(json))
-                            throw new ApiNetworkException("服务器返回空内容");
-                        _logger.Info("资源列表获取成功（第 " + attempt + " 次尝试）。");
+                            throw new ApiNetworkException(L.Get("api.emptyResponse"));
+                        _logger.Info(L.Format("api.fetchOk", attempt));
                         SaveCache(json);
                         return json;
                     }
@@ -94,7 +95,7 @@ namespace JftwGo.Core.Api
                 catch (Exception ex)
                 {
                     last = ex;
-                    _logger.Warn("第 " + attempt + "/" + _options.MaxRetries + " 次请求失败：" + ex.Message);
+                    _logger.Warn(L.Format("api.retryFail", attempt, _options.MaxRetries, ex.Message));
                     if (attempt < _options.MaxRetries)
                     {
                         int delayMs = (int)(_options.RetryBaseDelay.TotalMilliseconds * Math.Pow(2, attempt - 1));
@@ -102,8 +103,8 @@ namespace JftwGo.Core.Api
                     }
                 }
             }
-            throw new ApiNetworkException("资源列表获取失败，已重试 " + _options.MaxRetries + " 次：" +
-                                          (last == null ? "未知错误" : last.Message), last);
+            throw new ApiNetworkException(L.Format("api.allFail", _options.MaxRetries,
+                                          (last == null ? L.Get("common.unknown") : last.Message)), last);
         }
 
         // ---- JSON 解析 ----
@@ -118,7 +119,7 @@ namespace JftwGo.Core.Api
                 };
                 ResourceCatalog catalog = JsonConvert.DeserializeObject<ResourceCatalog>(json, settings);
                 if (catalog == null)
-                    throw new ResourceParseException("JSON 顶层为空");
+                    throw new ResourceParseException(L.Get("api.jsonEmpty"));
                 if (catalog.Resources == null)
                     catalog.Resources = new ResourceContainer();
                 return catalog;
@@ -126,7 +127,7 @@ namespace JftwGo.Core.Api
             catch (ResourceParseException) { throw; }
             catch (JsonException ex)
             {
-                throw new ResourceParseException("资源列表 JSON 解析失败：" + ex.Message, ex);
+                throw new ResourceParseException(L.Format("api.parseFail", ex.Message), ex);
             }
         }
 
@@ -211,7 +212,7 @@ namespace JftwGo.Core.Api
             }
             catch (Exception ex)
             {
-                _logger.Warn("写入资源缓存失败：" + ex.Message);
+                _logger.Warn(L.Format("api.cacheWriteFail", ex.Message));
             }
         }
 
@@ -228,7 +229,7 @@ namespace JftwGo.Core.Api
             }
             catch (Exception ex)
             {
-                _logger.Warn("读取资源缓存失败：" + ex.Message);
+                _logger.Warn(L.Format("api.cacheReadFail", ex.Message));
                 return false;
             }
         }

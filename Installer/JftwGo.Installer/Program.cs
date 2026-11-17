@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using JftwGo.Core.Api;
 using JftwGo.Core.Icons;
 using JftwGo.Core.Logging;
+using JftwGo.Core.Localization;
 
 namespace JftwGo.Installer
 {
@@ -13,6 +14,8 @@ namespace JftwGo.Installer
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            L.Initialize(); // 加载语言包（zh_cn / zh_tw / zh_hk）
 
             var logger = new FileLogger();
             var api = new ApiClient(ApiOptions.Default, logger);

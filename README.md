@@ -53,6 +53,21 @@ dotnet build jftwGo.sln -c Release
 - [Installer 说明](Installer/README.md)
 - [Direct 说明](Direct/README.md)
 
+## 多语言
+
+两个软件均内置多语言，语言包为各自目录下的 `lang/*.yaml`：
+
+| 语言 | 包名 |
+|---|---|
+| 简体中文 | `zh_cn` |
+| 繁体中文 | `zh_tw` |
+| 繁体中文（香港） | `zh_hk` |
+
+- 所有面向用户的文案（界面、状态、日志、错误）均通过本地化 key 从 YAML 读取，代码中无硬编码 UI 中文。
+- 首次启动按系统区域选择语言（中文系统默认简体中文），之后记住用户选择（存于 `%LocalAppData%\jftwGo\language.txt`）。
+- 运行时在向导窗口顶部右侧的下拉框切换语言，选择后自动重启以重建全部界面文本。
+- `lang/` 目录随程序输出到 exe 同级目录，可直接编辑 YAML 调整措辞或新增语言（新增后需在下拉框代码 `langCodes` 数组中登记）。YAML 为扁平 `key: value`，`{0}` 为占位符，`\n` 为换行。
+
 ## API 状态
 
 资源接口 `https://jftw.pinkoc.top/api/jftwGo/` 由服务端提供，当前**尚未就绪**。客户端已实现超时/重试/本地缓存回退/解析容错；API 上线后无需改动客户端即可接入，联调待接口就绪后进行。

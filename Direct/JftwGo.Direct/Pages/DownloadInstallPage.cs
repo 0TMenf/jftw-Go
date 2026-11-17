@@ -13,6 +13,8 @@ using JftwGo.UI;
 using JftwGo.UI.Controls;
 using JftwGo.UI.Wizard;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Direct.Pages
 {
     /// <summary>下载与安装进度页：下载 → 校验 → 解压 → 可选启动，支持取消与重试。</summary>
@@ -28,7 +30,7 @@ namespace JftwGo.Direct.Pages
 
         public Action OnFinished;
 
-        public override string PageTitle { get { return "下载并安装"; } }
+        public override string PageTitle { get { return L.Get("dl.title"); } }
         public override bool CanGoNext { get { return _finished; } }
 
         public DownloadInstallPage(DirectContext ctx)
@@ -43,11 +45,11 @@ namespace JftwGo.Direct.Pages
             _log.Attach(ctx.Logger);
 
             var toolbar = new Panel { Dock = DockStyle.Bottom, Height = 40 };
-            _btnRetry = UiTheme.MakeButton("重试", false);
+            _btnRetry = UiTheme.MakeButton(L.Get("common.retry"), false);
             _btnRetry.Location = new Point(0, 4);
             _btnRetry.Enabled = false;
             _btnRetry.Click += (s, e) => { _ = RunAsync(); };
-            var btnCancel = UiTheme.MakeButton("取消", false);
+            var btnCancel = UiTheme.MakeButton(L.Get("common.cancel"), false);
             btnCancel.Location = new Point(96, 4);
             btnCancel.Click += (s, e) => CancelWork();
             toolbar.Controls.Add(_btnRetry);
@@ -74,7 +76,7 @@ namespace JftwGo.Direct.Pages
             if (_cts != null && !_cts.IsCancellationRequested)
             {
                 _cts.Cancel();
-                _ctx.Logger.Warn("用户取消了安装流程。");
+                _ctx.Logger.Warn(L.Get("dl.userCancel"));
             }
         }
 
@@ -91,25 +93,25 @@ namespace JftwGo.Direct.Pages
             var item = _ctx.SelectedResource;
             if (item == null)
             {
-                ShowFail("未选择资源，无法安装。");
+                ShowFail(L.Get("dl.noSelect"));
                 return;
             }
             if (string.IsNullOrWhiteSpace(_ctx.InstallDir))
             {
-                ShowFail("未指定安装目录。");
+                ShowFail(L.Get("dl.noDir"));
                 return;
             }
 
             try
             {
-                _progress.SetProgress(0, "开始下载资源…", "");
+                _progress.SetProgress(0, L.Get("dl.downloading"), "");
                 string package = Path.Combine(AppPaths.DownloadDir,
                     Sanitize(item.Name) + "_" + (item.Version ?? "v") + ".pkg");
 
                 var downloader = new Downloader(_ctx.Logger);
                 var dl = new Progress<DownloadProgressInfo>(p =>
                     _progress.SetProgress(p.Percent,
-                        p.StatusText ?? ("正在下载… " + p.FormatSize(p.BytesReceived)),
+                        p.StatusText ?? L.Format("dl.downloadingFmt", p.FormatSize(p.BytesReceived)),
                         p.SpeedBytesPerSec > 0 ? FormatSpeed(p.SpeedBytesPerSec) : ""));
 
                 var result = await downloader.DownloadAsync(item, package, dl, ct).ConfigureAwait(true);
@@ -122,24 +124,24 @@ namespace JftwGo.Direct.Pages
                 ct.ThrowIfCancellationRequested();
 
                 // 解压/安装
-                _progress.SetProgress(0, "正在安装到目标目录…", "");
+                _progress.SetProgress(0, L.Get("dl.installing"), "");
                 string dir = _ctx.InstallDir;
                 if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
 
                 if (ArchiveExtractor.IsZip(package))
                 {
                     var ex = new Progress<int>(v =>
-                        _progress.SetProgress(v, "正在解压安装…", ""));
+                        _progress.SetProgress(v, L.Get("dl.extracting"), ""));
                     await ArchiveExtractor.ExtractZipAsync(package, dir, ex, ct).ConfigureAwait(true);
                 }
                 else
                 {
                     ArchiveExtractor.CopyFileToDir(package, dir);
-                    _progress.SetProgress(100, "已复制资源文件。", "");
+                    _progress.SetProgress(100, L.Get("dl.copied"), "");
                 }
 
                 _ctx.LaunchExePath = FindLauncher(dir);
-                _progress.SetProgress(100, "安装完成。", "");
+                _progress.SetProgress(100, L.Get("dl.done"), "");
 
                 if (_ctx.LaunchAfterInstall)
                     TryLaunch(_ctx.LaunchExePath);
@@ -150,12 +152,12 @@ namespace JftwGo.Direct.Pages
             }
             catch (OperationCanceledException)
             {
-                _progress.SetProgress(0, "已取消。", "");
+                _progress.SetProgress(0, L.Get("dl.canceled"), "");
                 if (Owner != null) { Owner.SetNextEnabled(false); Owner.UpdateNextButton(); }
             }
             catch (Exception ex)
             {
-                ShowFail("安装失败：" + ex.Message);
+                ShowFail(L.Format("dl.fail", ex.Message));
             }
         }
 
@@ -165,15 +167,15 @@ namespace JftwGo.Direct.Pages
             {
                 if (string.IsNullOrEmpty(exe) || !File.Exists(exe))
                 {
-                    _ctx.Logger.Warn("未找到可启动程序，已跳过启动。");
+                    _ctx.Logger.Warn(L.Get("dl.noLauncher"));
                     return;
                 }
                 Process.Start(new ProcessStartInfo(exe) { WorkingDirectory = Path.GetDirectoryName(exe) });
-                _ctx.Logger.Info("已启动：" + exe);
+                _ctx.Logger.Info(L.Format("dl.launched", exe));
             }
             catch (Exception ex)
             {
-                _ctx.Logger.Warn("启动失败：" + ex.Message);
+                _ctx.Logger.Warn(L.Format("dl.launchFail", ex.Message));
             }
         }
 
@@ -203,7 +205,7 @@ namespace JftwGo.Direct.Pages
         private void ShowFail(string message)
         {
             _ctx.Logger.Error(message);
-            _progress.SetProgress(0, "失败：" + message, "");
+            _progress.SetProgress(0, L.Format("dl.failedPrefix", message), "");
             _btnRetry.Enabled = true;
             _finished = false;
             if (Owner != null) { Owner.SetNextEnabled(false); Owner.UpdateNextButton(); }

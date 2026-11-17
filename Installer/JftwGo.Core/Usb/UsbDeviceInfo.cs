@@ -1,5 +1,7 @@
 using System;
 
+using JftwGo.Core.Localization;
+
 namespace JftwGo.Core.Usb
 {
     /// <summary>可移动磁盘信息。</summary>
@@ -17,13 +19,13 @@ namespace JftwGo.Core.Usb
         {
             get
             {
-                string label = string.IsNullOrWhiteSpace(VolumeLabel) ? "可移动磁盘" : VolumeLabel;
+                string label = string.IsNullOrWhiteSpace(VolumeLabel) ? L.Get("usb.removable") : VolumeLabel;
                 return string.Format("{0} ({1})  {2}", label, DriveLetter, Model);
             }
         }
 
         public string CapacityText { get { return FormatSize(TotalBytes); } }
-        public string FreeText { get { return FormatSize(FreeBytes) + " 可用"; } }
+        public string FreeText { get { return L.Format("usb.free", FormatSize(FreeBytes)); } }
 
         public static string FormatSize(long bytes)
         {

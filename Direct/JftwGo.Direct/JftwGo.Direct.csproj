@@ -65,5 +65,19 @@
     <None Include="app.config" />
     <None Include="app.manifest" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\lang\zh_cn.yaml">
+      <Link>lang\zh_cn.yaml</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\lang\zh_tw.yaml">
+      <Link>lang\zh_tw.yaml</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\lang\zh_hk.yaml">
+      <Link>lang\zh_hk.yaml</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
