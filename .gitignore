@@ -1,0 +1,22 @@
+# 构建产物
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userprefs
+
+# 编译临时
+*.pdb
+*.log
+
+# 临时/缓存
+_*.txt
+_deps/
+*.part
+
+# 系统
+Thumbs.db
+desktop.ini
+.vs/
+
+# 说明：packages/ 有意纳入版本管理，保证离线可构建
