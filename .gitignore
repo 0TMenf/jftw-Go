@@ -20,3 +20,6 @@ desktop.ini
 .vs/
 
 # 说明：packages/ 有意纳入版本管理，保证离线可构建
+# zig 工具链体积大（~400MB），不纳入版本管理；如需重新编译按 start1/README.md 获取
+tools/ziglang/
+tools/zig/
