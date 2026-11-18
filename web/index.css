@@ -1,0 +1,16 @@
+/* Reset / base — spec required */
+body {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  color: #1B133C;
+  margin: 0;
+}
+
+/* 中文主标题：Instrument Serif 无中文字形时回退到思源黑体，并微调字距 */
+h1 {
+  font-family: 'Instrument Serif', 'Noto Sans SC', serif;
+}
+
+/* 视频加载失败时的兜底背景，保证深色文字始终可读 */
+.hero {
+  background: linear-gradient(160deg, #f4f1ea 0%, #e8eef4 45%, #dfe7f0 100%);
+}
