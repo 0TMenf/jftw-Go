@@ -1,102 +1,1090 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>jftw Go — 一键部署游戏整合包</title>
-  <meta name="description" content="jftw Go 把常用的游戏资源整合包一键写入 U 盘，或直接安装到电脑——告别繁琐配置，把时间留给游戏。" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jftw Go — 一键部署游戏整合包</title>
+    <meta name="description" content="jftw Go 把常用的游戏整合包一键写入 U 盘，或直接安装到电脑，无需格式化，随插随玩。" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --bg-body: #ffffff;
+            --bg-container: #ffffff;
+            --bg-nav: #ffffff;
+            --bg-card: #fafafa;
+            --bg-card-text: #ffffff;
+            --bg-btn: #f5f5f5;
+            --bg-btn-primary: #1a1a1a;
+            --bg-btn-secondary: transparent;
+            --bg-modal: #ffffff;
+            --bg-input: #f5f5f5;
 
-  <!-- Google Fonts: Instrument Serif、Inter，以及中文回退字体思源黑体（Noto Sans SC） -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+            --text-primary: #1a1a1a;
+            --text-secondary: #555;
+            --text-muted: #777;
+            --text-btn-primary: #ffffff;
+            --text-btn-secondary: #1a1a1a;
+            --text-nav: #4a4a4a;
+            --text-nav-hover: #1a1a1a;
+            --text-highlight: #d0312d;
+            --text-flip: #d0312d;
 
-  <!-- Tailwind CSS (Play CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
-            // 中文回退到思源黑体，与桌面端保持一致
-            serif: ['Instrument Serif', 'Noto Sans SC', 'serif']
-          }
+            --border-color: rgba(0, 0, 0, 0.04);
+            --border-btn: #d0d0d0;
+            --border-modal: #e0e0e0;
+
+            --shadow-nav: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --shadow-container: 0 20px 60px rgba(0, 0, 0, 0.04);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.04);
+            --shadow-btn: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --shadow-modal: 0 40px 80px rgba(0, 0, 0, 0.20);
+
+            --glow-color: rgba(255, 200, 120, 0.55);
+            --glow-color-outer: rgba(255, 210, 150, 0.20);
+
+            --filter-img: none;
+            --filter-mark: drop-shadow(0 0 30px rgba(255, 200, 120, 0.25)) drop-shadow(0 0 60px rgba(255, 180, 100, 0.15));
+            --filter-mark-hover: drop-shadow(0 0 40px rgba(255, 200, 120, 0.40)) drop-shadow(0 0 80px rgba(255, 180, 100, 0.25));
+
+            --transition-theme: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
-      }
-    };
-  </script>
 
-  <link rel="stylesheet" href="index.css" />
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-container: #1a1a1a;
+            --bg-nav: #1a1a1a;
+            --bg-card: #242424;
+            --bg-card-text: #242424;
+            --bg-btn: #333;
+            --bg-btn-primary: #e8e8e8;
+            --bg-btn-secondary: transparent;
+            --bg-modal: #242424;
+            --bg-input: #333;
+
+            --text-primary: #f0f0f0;
+            --text-secondary: #aaa;
+            --text-muted: #888;
+            --text-btn-primary: #1a1a1a;
+            --text-btn-secondary: #f0f0f0;
+            --text-nav: #b0b0b0;
+            --text-nav-hover: #ffffff;
+            --text-highlight: #f57c5a;
+            --text-flip: #f57c5a;
+
+            --border-color: rgba(255, 255, 255, 0.06);
+            --border-btn: #444;
+            --border-modal: #444;
+
+            --shadow-nav: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-container: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+            --shadow-btn: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-modal: 0 40px 80px rgba(0, 0, 0, 0.6);
+
+            --glow-color: rgba(255, 210, 160, 0.30);
+            --glow-color-outer: rgba(255, 220, 180, 0.08);
+
+            --filter-img: brightness(0.92) contrast(1.05);
+            --filter-mark: drop-shadow(0 0 30px rgba(255, 180, 80, 0.15)) drop-shadow(0 0 60px rgba(255, 160, 60, 0.08));
+            --filter-mark-hover: drop-shadow(0 0 40px rgba(255, 180, 80, 0.25)) drop-shadow(0 0 60px rgba(255, 160, 60, 0.15));
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--bg-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px 40px;
+            margin: 0;
+            transition: background var(--transition-theme), color var(--transition-theme);
+            color: var(--text-primary);
+        }
+
+        /* ---------- Navbar ---------- */
+        .navbar {
+            width: 100%;
+            max-width: 1100px;
+            padding: 12px 24px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-nav);
+            border-radius: 60px;
+            box-shadow: var(--shadow-nav);
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeDown 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation-delay: 0.05s;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            transition: background var(--transition-theme), box-shadow var(--transition-theme), border-color var(--transition-theme);
+        }
+
+        @keyframes fadeDown {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 10px; }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            transition: color var(--transition-theme);
+        }
+
+        .nav-logo .brand-mark {
+            height: 36px;
+            width: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+        }
+
+        .nav-logo .brand-mark svg { width: 100%; height: 100%; fill: currentColor; }
+
+        .nav-logo span {
+            background: var(--bg-btn);
+            padding: 4px 14px 4px 12px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background var(--transition-theme), color var(--transition-theme);
+        }
+
+        .nav-center { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .nav-right { display: flex; align-items: center; }
+        .nav-links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-nav);
+            font-size: 15px;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 40px;
+            transition: all 0.25s ease;
+            background: transparent;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .nav-links a i { font-size: 18px; width: 1.2em; text-align: center; }
+
+        .nav-links a:hover {
+            color: var(--text-nav-hover);
+            background: var(--bg-btn);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-links a:active { transform: scale(0.96); }
+
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-btn);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px 6px 12px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .lang-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); }
+        .lang-btn i { font-size: 16px; color: var(--text-highlight); }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-btn);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+
+        .theme-toggle:hover { transform: translateY(-2px) rotate(12deg); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); }
+        .theme-toggle:active { transform: scale(0.92); }
+
+        /* ---------- Container ---------- */
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background: var(--bg-container);
+            border-radius: 48px;
+            padding: 30px 30px 60px;
+            box-shadow: var(--shadow-container);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1.2s cubic-bezier(0.23, 1, 0.32, 1),
+                        transform 1.2s cubic-bezier(0.23, 1, 0.32, 1),
+                        background var(--transition-theme),
+                        box-shadow var(--transition-theme);
+        }
+
+        .container.show { opacity: 1; transform: translateY(0); }
+
+        .hero-section      { animation-delay: 0.15s; }
+        .title-section     { animation-delay: 0.35s; }
+        .button-section    { animation-delay: 0.55s; }
+        .intro-card:nth-child(1) { animation-delay: 0.75s; }
+        .intro-card:nth-child(2) { animation-delay: 0.90s; }
+        .intro-card:nth-child(3) { animation-delay: 1.05s; }
+        .intro-card:nth-child(4) { animation-delay: 1.20s; }
+        .showcase-section  { animation-delay: 1.35s; }
+        .join-section      { animation-delay: 1.50s; }
+        .footer-icons      { animation-delay: 1.65s; }
+        .footer-declaration{ animation-delay: 1.80s; }
+
+        .hero-section, .title-section, .button-section, .intro-card,
+        .showcase-section, .join-section, .footer-icons, .footer-declaration {
+            opacity: 0;
+            transform: translateY(30px) scale(0.97);
+            animation: fadeUp 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(30px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ---------- Hero with glow ---------- */
+        .hero-section { margin-bottom: 28px; position: relative; }
+        .hero-wrapper {
+            position: relative;
+            width: 512px;
+            height: 512px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 580px; height: 580px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle at center,
+                    var(--glow-color) 0%,
+                    rgba(255, 180, 100, 0.30) 25%,
+                    rgba(255, 160, 80, 0.12) 50%,
+                    rgba(255, 140, 60, 0.04) 75%,
+                    transparent 100%);
+            pointer-events: none;
+            animation: glowPulse 3.2s ease-in-out infinite alternate;
+            z-index: 0;
+            transition: background var(--transition-theme);
+        }
+
+        .hero-glow-outer {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 700px; height: 700px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle at center,
+                    var(--glow-color-outer) 0%,
+                    rgba(255, 190, 130, 0.08) 40%,
+                    transparent 70%);
+            pointer-events: none;
+            animation: glowPulseOuter 4.0s ease-in-out infinite alternate;
+            z-index: 0;
+            transition: background var(--transition-theme);
+        }
+
+        @keyframes glowPulse {
+            0% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+        }
+        @keyframes glowPulseOuter {
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.08); }
+        }
+
+        .hero-mark {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            filter: var(--filter-mark);
+            transition: filter 0.3s, color var(--transition-theme);
+            border-radius: 24px;
+        }
+
+        .hero-mark:hover { filter: var(--filter-mark-hover); }
+        .hero-mark svg { width: 62%; height: 62%; fill: currentColor; }
+
+        /* ---------- Title ---------- */
+        .title-section { text-align: center; margin-bottom: 24px; padding: 0 10px; }
+
+        .title-line {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 6px 12px;
+            font-size: clamp(40px, 8vw, 72px);
+            font-weight: 800;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .title-static { color: var(--text-primary); white-space: nowrap; transition: color var(--transition-theme); }
+
+        .title-flip-wrapper {
+            display: inline-block;
+            position: relative;
+            width: 260px;
+            height: 1.2em;
+            perspective: 600px;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .title-flip {
+            display: inline-block;
+            color: var(--text-flip);
+            position: absolute;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            transform-origin: center center;
+            backface-visibility: hidden;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            font-weight: 800;
+            text-align: center;
+            white-space: nowrap;
+            line-height: 1.2;
+            text-shadow: 0 0 10px rgba(255, 140, 0, 0.8),
+                         0 0 20px rgba(255, 100, 0, 0.6),
+                         0 0 40px rgba(255, 80, 0, 0.3);
+        }
+
+        [data-theme="dark"] .title-flip {
+            text-shadow: 0 0 10px rgba(255, 160, 80, 0.7),
+                         0 0 20px rgba(255, 120, 40, 0.5),
+                         0 0 40px rgba(255, 80, 20, 0.25);
+        }
+
+        .title-flip.flipping { animation: flipUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+
+        @keyframes flipUp {
+            0%   { transform: rotateX(90deg) scale(0.9); opacity: 0.3; text-shadow: 0 0 5px rgba(255, 140, 0, 0.3); }
+            60%  { transform: rotateX(-10deg) scale(1.02); opacity: 1; text-shadow: 0 0 20px rgba(255, 140, 0, 1), 0 0 40px rgba(255, 100, 0, 0.8); }
+            100% { transform: rotateX(0deg) scale(1); opacity: 1; text-shadow: 0 0 10px rgba(255, 140, 0, 0.8), 0 0 20px rgba(255, 100, 0, 0.6), 0 0 40px rgba(255, 80, 0, 0.3); }
+        }
+
+        .subtitle {
+            margin: 18px auto 0;
+            max-width: 720px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            transition: color var(--transition-theme);
+        }
+
+        /* ---------- Buttons ---------- */
+        .button-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px 24px;
+            margin-bottom: 48px;
+        }
+
+        .btn {
+            padding: 16px 44px;
+            border-radius: 60px;
+            font-size: 20px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--bg-btn);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            font-family: inherit;
+        }
+
+        .btn-primary { background: var(--bg-btn-primary); color: var(--text-btn-primary); box-shadow: var(--shadow-btn); }
+        .btn-primary:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18); }
+        .btn-primary:active { transform: translateY(0) scale(0.98); }
+
+        .btn-secondary {
+            background: var(--bg-btn-secondary);
+            color: var(--text-btn-secondary);
+            border: 2px solid var(--border-btn);
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            border-color: var(--text-primary);
+            background: var(--bg-btn);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+        .btn-secondary:active { transform: translateY(0) scale(0.98); }
+
+        /* ---------- Intro cards ---------- */
+        .intro-cards { width: 100%; display: flex; flex-direction: column; gap: 24px; margin-bottom: 48px; }
+
+        .intro-card {
+            display: flex;
+            flex-direction: row;
+            border-radius: 32px;
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            min-height: 200px;
+            transition: background var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
+        }
+
+        .intro-card .card-text {
+            flex: 0 0 50%;
+            padding: 30px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: var(--bg-card-text);
+            transition: background var(--transition-theme);
+            order: 1;
+        }
+
+        .intro-card .card-image {
+            flex: 0 0 50%;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-btn);
+            min-height: 200px;
+            transition: background var(--transition-theme);
+            order: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .intro-card .card-image i {
+            font-size: 110px;
+            color: var(--text-highlight);
+            filter: var(--filter-img);
+            transition: filter var(--transition-theme), transform 0.4s ease;
+        }
+
+        .intro-card:hover .card-image i { transform: scale(1.08) rotate(-4deg); }
+
+        .intro-card .card-image::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to left, transparent 0%, transparent 45%, var(--bg-btn) 100%);
+            pointer-events: none;
+        }
+
+        .intro-card .card-text h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+            transition: color var(--transition-theme);
+        }
+
+        .intro-card .card-text h3 i { color: var(--text-highlight); margin-right: 6px; transition: color var(--transition-theme); }
+        .intro-card .card-text p { font-size: 15px; line-height: 1.7; color: var(--text-secondary); transition: color var(--transition-theme); }
+        .intro-card .card-text .highlight { color: var(--text-highlight); font-weight: 600; transition: color var(--transition-theme); }
+
+        /* ---------- Showcase (terminal) ---------- */
+        .showcase-section { width: 100%; margin-bottom: 32px; }
+        .showcase-wrapper {
+            width: 100%;
+            border-radius: 32px;
+            overflow: hidden;
+            background: var(--bg-btn);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+            transition: background var(--transition-theme), border-color var(--transition-theme);
+        }
+        .showcase-wrapper pre {
+            margin: 0;
+            padding: 28px 32px;
+            font-family: Consolas, 'SF Mono', Menlo, monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            overflow-x: auto;
+            transition: color var(--transition-theme);
+        }
+        .showcase-wrapper .tree-title { display: block; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; font-family: inherit; }
+
+        /* ---------- Footer ---------- */
+        .join-section { width: 100%; display: flex; justify-content: center; padding: 12px 0 8px; }
+
+        .footer-icons {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 20px 0 12px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 24px;
+            transition: border-color var(--transition-theme);
+        }
+
+        .footer-icons a {
+            display: flex; align-items: center; justify-content: center;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: var(--bg-btn);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            font-size: 20px;
+            transition: all 0.25s ease;
+        }
+
+        .footer-icons a:hover {
+            transform: translateY(-3px) scale(1.08);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
+            color: var(--text-highlight);
+            border-color: var(--text-highlight);
+        }
+
+        .footer-declaration {
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 8px 0 4px;
+            line-height: 1.6;
+            transition: color var(--transition-theme);
+        }
+
+        .footer-declaration a { color: var(--text-muted); text-decoration: none; }
+        .footer-declaration a:hover { text-decoration: underline; color: var(--text-primary); }
+
+        /* ---------- Modals ---------- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: modalFadeIn 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; }
+
+        @keyframes modalFadeIn {
+            0% { opacity: 0; transform: scale(0.94); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-box {
+            background: var(--bg-modal);
+            border-radius: 40px;
+            padding: 44px 48px 40px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: var(--shadow-modal);
+            text-align: center;
+            position: relative;
+            transition: background var(--transition-theme), box-shadow var(--transition-theme);
+        }
+
+        .modal-box .close-btn {
+            position: absolute;
+            top: 16px; right: 20px;
+            background: none; border: none;
+            font-size: 28px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+            padding: 4px 8px;
+            font-family: inherit;
+        }
+        .modal-box .close-btn:hover { color: var(--text-primary); }
+        .modal-box .modal-icon { font-size: 48px; margin-bottom: 4px; }
+        .modal-box h3 { font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; transition: color var(--transition-theme); }
+        .modal-box .modal-desc { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; line-height: 1.5; transition: color var(--transition-theme); }
+
+        .modal-options { display: flex; flex-direction: column; gap: 12px; }
+
+        .modal-options .modal-btn {
+            padding: 14px 20px;
+            border-radius: 60px;
+            font-size: 17px;
+            font-weight: 600;
+            border: 2px solid var(--border-modal);
+            background: var(--bg-modal);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: inherit;
+            text-decoration: none;
+        }
+        .modal-options .modal-btn:hover { border-color: var(--text-primary); background: var(--bg-btn); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); }
+        .modal-options .modal-btn:active { transform: scale(0.97); }
+        .modal-options .modal-btn i { font-size: 20px; }
+
+        .modal-options .modal-btn.installer { border-color: #d0312d; color: #d0312d; }
+        .modal-options .modal-btn.installer:hover { background: #fff0ee; border-color: #b82824; color: #b82824; }
+        [data-theme="dark"] .modal-options .modal-btn.installer:hover { background: #2a1a18; border-color: #e85a4a; color: #e85a4a; }
+
+        .modal-options .modal-btn.direct { border-color: #2b82d9; color: #2b82d9; }
+        .modal-options .modal-btn.direct:hover { background: #eef5ff; border-color: #1a6ec4; color: #1a6ec4; }
+        [data-theme="dark"] .modal-options .modal-btn.direct:hover { background: #1a2a3a; border-color: #3a8ae0; color: #5a9ae8; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 900px) {
+            .intro-card { flex-direction: column !important; }
+            .intro-card .card-text { flex: 1 1 auto; padding: 24px 24px; order: 1; }
+            .intro-card .card-image { flex: 0 0 220px; min-height: 180px; order: 2; }
+            .intro-card .card-image i { font-size: 84px; }
+            .intro-card .card-image::after { background: linear-gradient(to top, transparent 0%, transparent 45%, var(--bg-btn) 100%); }
+            .intro-card .card-text h3 { font-size: 20px; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar { flex-direction: column; align-items: stretch; padding: 16px 20px; border-radius: 40px; gap: 14px; }
+            .nav-left, .nav-center, .nav-right { justify-content: center; }
+            .nav-logo { font-size: 20px; }
+            .nav-logo .brand-mark { height: 32px; width: 32px; }
+            .nav-links { gap: 4px; justify-content: center; }
+            .nav-links a { font-size: 14px; padding: 6px 12px; }
+            .nav-links a i { font-size: 16px; }
+            .lang-btn { font-size: 13px; padding: 5px 12px 5px 10px; }
+            .theme-toggle { width: 36px; height: 36px; font-size: 16px; }
+            .title-flip-wrapper { width: 200px; }
+            .modal-box { padding: 32px 24px 30px; }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 24px 16px 40px; border-radius: 28px; }
+            .hero-wrapper { width: 100%; height: auto; aspect-ratio: 1/1; max-width: 512px; }
+            .hero-glow { width: 110%; height: 110%; }
+            .hero-glow-outer { width: 130%; height: 130%; }
+            .title-line { font-size: clamp(30px, 10vw, 48px); gap: 2px 8px; }
+            .title-flip-wrapper { width: 150px; }
+            .subtitle { font-size: 14px; }
+            .btn { padding: 14px 30px; font-size: 17px; }
+            .button-section { gap: 12px; }
+            .intro-card .card-image { flex: 0 0 160px; min-height: 140px; }
+            .intro-card .card-text { padding: 18px 20px; }
+            .intro-card .card-text h3 { font-size: 18px; }
+            .intro-card .card-text p { font-size: 14px; }
+            .showcase-wrapper pre { padding: 20px; font-size: 12px; }
+            .modal-box { padding: 28px 20px 26px; border-radius: 32px; }
+            .modal-box h3 { font-size: 22px; }
+            .modal-options .modal-btn { font-size: 16px; padding: 14px 16px; }
+            .nav-links a { font-size: 13px; padding: 4px 10px; }
+            .nav-links a i { font-size: 14px; }
+            .footer-icons a { width: 38px; height: 38px; font-size: 17px; }
+            .footer-declaration { font-size: 12px; }
+        }
+
+        @media (max-width: 420px) {
+            .title-line { font-size: clamp(24px, 8vw, 36px); }
+            .title-flip-wrapper { width: 120px; }
+            .btn { padding: 12px 22px; font-size: 15px; }
+            .navbar { padding: 12px 14px; }
+            .nav-logo .brand-mark { height: 28px; width: 28px; }
+            .nav-links a { font-size: 12px; padding: 4px 8px; }
+            .nav-links a i { font-size: 13px; }
+            .intro-card .card-image { flex: 0 0 130px; min-height: 110px; }
+            .intro-card .card-image i { font-size: 64px; }
+            .intro-card .card-text { padding: 14px 16px; }
+            .intro-card .card-text h3 { font-size: 16px; }
+            .intro-card .card-text p { font-size: 13px; }
+            .modal-box { padding: 24px 16px 22px; border-radius: 28px; }
+            .modal-box h3 { font-size: 20px; }
+            .modal-options .modal-btn { font-size: 15px; padding: 12px 14px; }
+            .footer-icons a { width: 34px; height: 34px; font-size: 15px; }
+            .footer-declaration { font-size: 11px; }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- 单屏全屏 Hero -->
-  <section class="relative h-screen w-full overflow-hidden flex flex-col hero">
-
-    <!-- 背景视频（位于所有内容之下） -->
-    <video
-      class="absolute inset-0 z-0 w-full h-[130%] object-cover object-top"
-      autoPlay
-      muted
-      loop
-      playsInline
-      aria-hidden="true"
-    >
-      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260714_113715_c7e0daa0-8bdd-4486-a2da-040901f8f0ea.mp4" type="video/mp4" />
-    </video>
-
-    <!-- 顶部导航胶囊 -->
-    <nav class="relative z-10 flex justify-center pt-4 md:pt-6 px-4">
-      <div class="inline-flex items-center gap-4 md:gap-8 bg-white/70 backdrop-blur-md rounded-xl px-4 md:px-6 py-3 shadow-sm">
-
-        <!-- Logo：两个几何箭头 -->
-        <a href="#" aria-label="jftw Go 首页" class="shrink-0">
-          <svg width="24" height="24" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M 256 256 L 128 256 L 0 128 L 128 128 Z" fill="#1B133C" />
-            <path d="M 256 128 L 128 128 L 0 0 L 128 0 Z" fill="#1B133C" />
-          </svg>
-        </a>
-
-        <!-- 导航链接：移动端隐藏，sm 及以上显示 -->
-        <div class="hidden sm:flex items-center gap-6 md:gap-8">
-          <a href="#features" class="text-sm font-medium text-[#1B133C]/80 hover:text-[#1B133C] transition-all duration-200">功能特性</a>
-          <a href="#download" class="text-sm font-medium text-[#1B133C]/80 hover:text-[#1B133C] transition-all duration-200">下载</a>
-          <a href="#guide" class="text-sm font-medium text-[#1B133C]/80 hover:text-[#1B133C] transition-all duration-200">使用指南</a>
-          <a href="#about" class="text-sm font-medium text-[#1B133C]/80 hover:text-[#1B133C] transition-all duration-200">关于</a>
+    <header class="navbar">
+        <div class="nav-left">
+            <a href="#top" class="nav-logo">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 256 256"><path d="M 256 256 L 128 256 L 0 128 L 128 128 Z"/><path d="M 256 128 L 128 128 L 0 0 L 128 0 Z"/></svg>
+                </span>
+                <span>jftw Go</span>
+            </a>
         </div>
 
-      </div>
-    </nav>
+        <div class="nav-center">
+            <button class="lang-btn" id="langToggle" aria-label="切换语言">
+                <i class="fas fa-globe"></i>
+                <span id="currentLangLabel" data-i18n="lang.label">简体中文</span>
+            </button>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换深色模式">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+        </div>
 
-    <!-- Hero 内容 -->
-    <div class="relative z-10 flex flex-col items-center text-center mt-8 md:mt-16 px-4">
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="#top"><i class="fas fa-home"></i> <span data-i18n="nav.home">首页</span></a>
+                <a href="#download" id="navDownload"><i class="fas fa-download"></i> <span data-i18n="nav.download">下载</span></a>
+                <a href="#features"><i class="fas fa-cubes"></i> <span data-i18n="nav.features">功能</span></a>
+                <a href="#about"><i class="fas fa-circle-info"></i> <span data-i18n="nav.about">关于</span></a>
+            </div>
+        </div>
+    </header>
 
-      <!-- 徽章 -->
-      <div class="mb-6 inline-flex items-center gap-2 rounded-xl border border-[#1B133C]/10 bg-white/70 backdrop-blur-sm px-4 py-2 text-sm font-medium text-[#1B133C]">
-        <span class="flex items-center justify-center bg-orange-500 rounded w-5 h-5 text-white text-xs font-bold">j</span>
-        <span>开源免费 · 本地运行</span>
-      </div>
+    <div class="container" id="app">
 
-      <!-- 主标题 -->
-      <h1 class="font-['Instrument_Serif'] text-4xl sm:text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight text-[#1B133C] max-w-4xl">
-        一键部署游戏整合包<br />
-        随时随地，即刻开玩
-      </h1>
+        <div class="hero-section" id="top">
+            <div class="hero-wrapper">
+                <div class="hero-glow-outer"></div>
+                <div class="hero-glow"></div>
+                <div class="hero-mark" aria-label="jftw Go 标志">
+                    <svg viewBox="0 0 256 256" aria-hidden="true">
+                        <path d="M 256 256 L 128 256 L 0 128 L 128 128 Z"/>
+                        <path d="M 256 128 L 128 128 L 0 0 L 128 0 Z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
 
-      <!-- 副标题 -->
-      <p class="mt-5 sm:mt-6 max-w-3xl text-xs sm:text-sm md:text-base leading-relaxed text-[#1B133C]/70">
-        告别繁琐的安装配置。jftw Go 把常用的游戏资源整合包一键写入 U 盘，或直接安装到你的电脑——少花时间折腾，多花时间游玩。
-      </p>
+        <div class="title-section">
+            <div class="title-line">
+                <span class="title-static" data-i18n="title.static">一键部署你的</span>
+                <span class="title-flip-wrapper">
+                    <span class="title-flip" id="flipText">游戏整合包</span>
+                </span>
+            </div>
+            <p class="subtitle" data-i18n="subtitle">无需格式化 U 盘，不碰系统设置。选好整合包，一键写入 U 盘或直接安装到电脑，随插随玩。</p>
+        </div>
 
-      <!-- CTA 按钮 -->
-      <a href="#download" class="mt-7 sm:mt-8 inline-block rounded-xl bg-[#FEFEFE] px-6 sm:px-8 py-3 sm:py-3.5 text-sm font-semibold text-[#1B133C] shadow-[0px_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0px_6px_16px_rgba(0,0,0,0.2)] transition-all duration-300">
-        下载 jftw Go
-      </a>
+        <div class="button-section">
+            <button class="btn btn-primary" id="downloadBtn"><i class="fas fa-download"></i> <span data-i18n="btn.download">下载 jftw Go</span></button>
+            <a href="https://github.com/0TMenf/jftw-Go" target="_blank" rel="noopener" class="btn btn-secondary"><i class="fas fa-book"></i> <span data-i18n="btn.docs">使用文档</span></a>
+        </div>
+
+        <div class="intro-cards" id="features">
+            <div class="intro-card">
+                <div class="card-text">
+                    <h3><i class="fas fa-usb"></i> <span data-i18n="card1.title">U 盘部署</span></h3>
+                    <p data-i18n-html="card1.desc">不格式化、不清盘。只在 U 盘建立 <span class="highlight">jftw_Go_Assets</span> 目录，每个整合包一个文件夹，根目录自动生成快捷方式与启动脚本。</p>
+                </div>
+                <div class="card-image"><i class="fas fa-usb"></i></div>
+            </div>
+
+            <div class="intro-card">
+                <div class="card-text">
+                    <h3><i class="fas fa-bolt"></i> <span data-i18n="card2.title">在线直装</span></h3>
+                    <p data-i18n-html="card2.desc">没有 U 盘也能玩。<span class="highlight">jftw Go Direct</span> 在线下载后解压到指定目录，一键启动，小白也能轻松搞定。</p>
+                </div>
+                <div class="card-image"><i class="fas fa-bolt"></i></div>
+            </div>
+
+            <div class="intro-card">
+                <div class="card-text">
+                    <h3><i class="fas fa-language"></i> <span data-i18n="card3.title">多语言</span></h3>
+                    <p data-i18n-html="card3.desc">内置 <span class="highlight">简体中文 / 繁體中文 / English</span> 语言包，随时切换；界面字体使用内嵌思源黑体，清爽统一。</p>
+                </div>
+                <div class="card-image"><i class="fas fa-language"></i></div>
+            </div>
+
+            <div class="intro-card">
+                <div class="card-text">
+                    <h3><i class="fas fa-shield-halved"></i> <span data-i18n="card4.title">安全可控</span></h3>
+                    <p data-i18n-html="card4.desc">本地运行，数据只留在你的设备。下载支持 <span class="highlight">SHA256 校验</span>，文件完整可验证，写入前还有二次确认。</p>
+                </div>
+                <div class="card-image"><i class="fas fa-shield-halved"></i></div>
+            </div>
+        </div>
+
+        <div class="showcase-section" id="about">
+            <div class="showcase-wrapper">
+                <pre><span class="tree-title" data-i18n="tree.title">U 盘上的目录结构</span>U:\
+├─ jftw_Go_Assets\
+│   └─ version\
+│       ├─ &lt;整合包 A&gt;      ← 每个整合包独立文件夹
+│       │   └─ start1.exe
+│       └─ &lt;整合包 B&gt;\
+│           └─ start1.exe
+├─ jftw Go.lnk            ← 快捷方式
+└─ jftw Go.bat            ← 启动脚本</pre>
+            </div>
+        </div>
+
+        <div class="join-section" id="download">
+            <button class="btn btn-primary" id="joinUsBtn"><i class="fas fa-rocket"></i> <span data-i18n="btn.start">立即开始</span></button>
+        </div>
+
+        <div class="footer-icons">
+            <a href="https://github.com/0TMenf/jftw-Go" target="_blank" rel="noopener" aria-label="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://github.com/0TMenf/jftw-Go/releases" target="_blank" rel="noopener" aria-label="Releases"><i class="fas fa-box"></i></a>
+            <a href="https://github.com/0TMenf/jftw-Go/blob/main/README.md" target="_blank" rel="noopener" aria-label="文档"><i class="fas fa-book-open"></i></a>
+        </div>
+
+        <div class="footer-declaration">
+            © jftw Go · 2026 · <a href="https://github.com/0TMenf/jftw-Go/blob/main/LICENSE" target="_blank" rel="noopener">Apache-2.0</a>
+        </div>
 
     </div>
 
-  </section>
+    <!-- Download modal -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal-box">
+            <button class="close-btn" id="downloadModalCloseBtn">&times;</button>
+            <div class="modal-icon">🚀</div>
+            <h3 data-i18n="modal.download.title">选择适合你的版本</h3>
+            <p class="modal-desc" data-i18n="modal.download.desc">两个独立软件，按需下载</p>
+            <div class="modal-options">
+                <a href="https://github.com/0TMenf/jftw-Go/releases" target="_blank" rel="noopener" class="modal-btn installer">
+                    <i class="fab fa-windows"></i> <span data-i18n="modal.installer">jftw Go Installer · U 盘部署</span>
+                </a>
+                <a href="https://github.com/0TMenf/jftw-Go/releases" target="_blank" rel="noopener" class="modal-btn direct">
+                    <i class="fas fa-download"></i> <span data-i18n="modal.direct">jftw Go Direct · 在线直装</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Language modal -->
+    <div class="modal-overlay" id="langModal">
+        <div class="modal-box">
+            <button class="close-btn" id="langModalCloseBtn">&times;</button>
+            <div class="modal-icon">🌐</div>
+            <h3 data-i18n="modal.lang.title">选择语言</h3>
+            <div class="modal-options">
+                <button class="modal-btn zh" data-lang="zh-cn">🇨🇳 简体中文</button>
+                <button class="modal-btn zh" data-lang="zh-tw">🇭🇰 繁體中文</button>
+                <button class="modal-btn en" data-lang="en">🇺🇸 English</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            /* ---------- i18n ---------- */
+            var I18N = {
+                'zh-cn': {
+                    'lang.label': '简体中文',
+                    'nav.home': '首页', 'nav.download': '下载', 'nav.features': '功能', 'nav.about': '关于',
+                    'title.static': '一键部署你的',
+                    'flip.words': ['游戏整合包', '便携启动盘', '游戏环境', '在线直装'],
+                    'subtitle': '无需格式化 U 盘，不碰系统设置。选好整合包，一键写入 U 盘或直接安装到电脑，随插随玩。',
+                    'btn.download': '下载 jftw Go', 'btn.docs': '使用文档', 'btn.start': '立即开始',
+                    'card1.title': 'U 盘部署', 'card2.title': '在线直装', 'card3.title': '多语言', 'card4.title': '安全可控',
+                    'card1.desc': '不格式化、不清盘。只在 U 盘建立 <span class="highlight">jftw_Go_Assets</span> 目录，每个整合包一个文件夹，根目录自动生成快捷方式与启动脚本。',
+                    'card2.desc': '没有 U 盘也能玩。<span class="highlight">jftw Go Direct</span> 在线下载后解压到指定目录，一键启动，小白也能轻松搞定。',
+                    'card3.desc': '内置 <span class="highlight">简体中文 / 繁體中文 / English</span> 语言包，随时切换；界面字体使用内嵌思源黑体，清爽统一。',
+                    'card4.desc': '本地运行，数据只留在你的设备。下载支持 <span class="highlight">SHA256 校验</span>，文件完整可验证，写入前还有二次确认。',
+                    'tree.title': 'U 盘上的目录结构',
+                    'modal.download.title': '选择适合你的版本', 'modal.download.desc': '两个独立软件，按需下载',
+                    'modal.installer': 'jftw Go Installer · U 盘部署', 'modal.direct': 'jftw Go Direct · 在线直装',
+                    'modal.lang.title': '选择语言'
+                },
+                'zh-tw': {
+                    'lang.label': '繁體中文',
+                    'nav.home': '首頁', 'nav.download': '下載', 'nav.features': '功能', 'nav.about': '關於',
+                    'title.static': '一鍵部署你的',
+                    'flip.words': ['遊戲整合包', '隨身啟動碟', '遊戲環境', '線上一鍵安裝'],
+                    'subtitle': '無需格式化隨身碟，不碰系統設定。選好整合包，一鍵寫入隨身碟或直接安裝到電腦，隨插即玩。',
+                    'btn.download': '下載 jftw Go', 'btn.docs': '使用文件', 'btn.start': '立即開始',
+                    'card1.title': '隨身碟部署', 'card2.title': '線上一鍵安裝', 'card3.title': '多語言', 'card4.title': '安全可控',
+                    'card1.desc': '不格式化、不清盤。只在隨身碟建立 <span class="highlight">jftw_Go_Assets</span> 目錄，每個整合包一個資料夾，根目錄自動產生捷徑與啟動腳本。',
+                    'card2.desc': '沒有隨身碟也能玩。<span class="highlight">jftw Go Direct</span> 線上下載後解壓到指定目錄，一鍵啟動，新手也能輕鬆搞定。',
+                    'card3.desc': '內建 <span class="highlight">簡體中文 / 繁體中文 / English</span> 語言包，隨時切換；介面字型使用內嵌思源黑體，清爽統一。',
+                    'card4.desc': '本機執行，資料只留在你的裝置。下載支援 <span class="highlight">SHA256 校驗</span>，檔案完整可驗證，寫入前還有二次確認。',
+                    'tree.title': '隨身碟上的目錄結構',
+                    'modal.download.title': '選擇適合你的版本', 'modal.download.desc': '兩個獨立軟體，依需求下載',
+                    'modal.installer': 'jftw Go Installer · 隨身碟部署', 'modal.direct': 'jftw Go Direct · 線上一鍵安裝',
+                    'modal.lang.title': '選擇語言'
+                },
+                'en': {
+                    'lang.label': 'English',
+                    'nav.home': 'Home', 'nav.download': 'Download', 'nav.features': 'Features', 'nav.about': 'About',
+                    'title.static': 'Deploy your',
+                    'flip.words': ['game packs', 'portable drive', 'game setup', 'in one click'],
+                    'subtitle': 'No formatting, no system tweaks. Pick a pack and write it to a USB drive or install it straight to your PC — ready when you are.',
+                    'btn.download': 'Download jftw Go', 'btn.docs': 'Documentation', 'btn.start': 'Get started',
+                    'card1.title': 'USB deployment', 'card2.title': 'Direct install', 'card3.title': 'Multilingual', 'card4.title': 'Safe & local',
+                    'card1.desc': 'No formatting, no wiping. It creates <span class="highlight">jftw_Go_Assets</span> on the drive, one folder per pack, plus a shortcut and launcher at the root.',
+                    'card2.desc': 'No USB drive? <span class="highlight">jftw Go Direct</span> downloads and unpacks to a folder of your choice, then launches in one click.',
+                    'card3.desc': 'Built-in <span class="highlight">Simplified Chinese / Traditional Chinese / English</span> packs, switch anytime. Embedded Source Han Sans keeps the UI crisp.',
+                    'card4.desc': 'Runs locally — your data stays on your device. Downloads support <span class="highlight">SHA256 verification</span> and writing asks for confirmation.',
+                    'tree.title': 'On-drive folder structure',
+                    'modal.download.title': 'Pick your edition', 'modal.download.desc': 'Two standalone apps — choose what you need',
+                    'modal.installer': 'jftw Go Installer · USB deployment', 'modal.direct': 'jftw Go Direct · Direct install',
+                    'modal.lang.title': 'Choose language'
+                }
+            };
+
+            var currentLang = 'zh-cn';
+            try { currentLang = localStorage.getItem('jftwgo_lang') || 'zh-cn'; } catch (_) {}
+            if (!I18N[currentLang]) currentLang = 'zh-cn';
+
+            var flipEl = document.getElementById('flipText');
+            var wordList = I18N[currentLang]['flip.words'];
+            var currentIndex = 0;
+            var isFlipping = false;
+            var flipInterval = null;
+
+            var langModal = document.getElementById('langModal');
+
+            function closeModal(m) { m.classList.remove('active'); document.body.style.overflow = ''; }
+            function closeLangModal() { closeModal(langModal); }
+
+            function applyLang(lang) {
+                if (!I18N[lang]) return;
+                currentLang = lang;
+                var dict = I18N[lang];
+                document.documentElement.setAttribute('lang', lang === 'zh-tw' ? 'zh-Hant' : (lang === 'en' ? 'en' : 'zh-CN'));
+
+                var textEls = document.querySelectorAll('[data-i18n]');
+                for (var i = 0; i < textEls.length; i++) {
+                    var key = textEls[i].getAttribute('data-i18n');
+                    if (dict[key] !== undefined) textEls[i].textContent = dict[key];
+                }
+                var htmlEls = document.querySelectorAll('[data-i18n-html]');
+                for (var j = 0; j < htmlEls.length; j++) {
+                    var k2 = htmlEls[j].getAttribute('data-i18n-html');
+                    if (dict[k2] !== undefined) htmlEls[j].innerHTML = dict[k2];
+                }
+                wordList = dict['flip.words'] || wordList;
+                currentIndex = 0;
+                flipEl.textContent = wordList[0];
+
+                try { localStorage.setItem('jftwgo_lang', lang); } catch (_) {}
+                closeLangModal();
+            }
+
+            /* ---------- Theme ---------- */
+            var themeToggle = document.getElementById('themeToggle');
+            var themeIcon = document.getElementById('themeIcon');
+            var container = document.querySelector('.container');
+
+            function getStoredTheme() {
+                try { return localStorage.getItem('jftwgo_theme') || 'light'; } catch (_) { return 'light'; }
+            }
+            function setTheme(theme) {
+                var isDark = theme === 'dark';
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                try { localStorage.setItem('jftwgo_theme', theme); } catch (_) {}
+            }
+            themeToggle.addEventListener('click', function () {
+                var current = document.documentElement.getAttribute('data-theme') || 'light';
+                setTheme(current === 'dark' ? 'light' : 'dark');
+            });
+
+            /* ---------- Modals ---------- */
+            var downloadModal = document.getElementById('downloadModal');
+            function openModal(m) { m.classList.add('active'); document.body.style.overflow = 'hidden'; }
+
+            document.getElementById('downloadBtn').addEventListener('click', function () { openModal(downloadModal); });
+            document.getElementById('joinUsBtn').addEventListener('click', function () { openModal(downloadModal); });
+            document.getElementById('navDownload').addEventListener('click', function (e) { e.preventDefault(); openModal(downloadModal); });
+
+            document.getElementById('downloadModalCloseBtn').addEventListener('click', function () { closeModal(downloadModal); });
+            document.getElementById('langModalCloseBtn').addEventListener('click', closeLangModal);
+            downloadModal.addEventListener('click', function (e) { if (e.target === downloadModal) closeModal(downloadModal); });
+            langModal.addEventListener('click', function (e) { if (e.target === langModal) closeLangModal(); });
+
+            document.getElementById('langToggle').addEventListener('click', function (e) { e.stopPropagation(); openModal(langModal); });
+
+            var langBtns = document.querySelectorAll('[data-lang]');
+            for (var n = 0; n < langBtns.length; n++) {
+                (function (btn) {
+                    btn.addEventListener('click', function () { applyLang(btn.getAttribute('data-lang')); });
+                })(langBtns[n]);
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') { closeModal(downloadModal); closeLangModal(); }
+            });
+
+            /* ---------- Flip text ---------- */
+            function flipToNext() {
+                if (isFlipping) return;
+                isFlipping = true;
+                flipEl.classList.remove('flipping');
+                void flipEl.offsetWidth;
+                flipEl.classList.add('flipping');
+                setTimeout(function () {
+                    currentIndex = (currentIndex + 1) % wordList.length;
+                    flipEl.textContent = wordList[currentIndex];
+                }, 350);
+                setTimeout(function () { flipEl.classList.remove('flipping'); isFlipping = false; }, 700);
+            }
+            function startFlipTimer() {
+                if (flipInterval) clearInterval(flipInterval);
+                flipInterval = setInterval(flipToNext, 5000);
+            }
+            document.addEventListener('keydown', function (e) {
+                if (e.key === ' ' && e.target === document.body) { e.preventDefault(); flipToNext(); }
+            });
+
+            /* ---------- Init ---------- */
+            setTheme(getStoredTheme());
+            applyLang(currentLang);
+            startFlipTimer();
+            requestAnimationFrame(function () { container.classList.add('show'); });
+        })();
+    </script>
 
 </body>
 </html>
