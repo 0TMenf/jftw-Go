@@ -11,7 +11,7 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <LangVersion>7.3</LangVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon />
+    <ApplicationIcon>app.ico</ApplicationIcon>
     <StartupObject>JftwGo.Installer.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -68,6 +68,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <Content Include="app.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\lang\zh_cn.yaml">

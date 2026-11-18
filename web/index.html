@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>jftw Go — 一键部署游戏整合包</title>
     <meta name="description" content="jftw Go 把常用的游戏整合包一键写入 U 盘，或直接安装到电脑，无需格式化，随插随玩。" />
+    <link rel="icon" href="jftw-go.ico" type="image/x-icon" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         :root {
@@ -147,16 +148,14 @@
         }
 
         .nav-logo .brand-mark {
-            height: 36px;
-            width: 36px;
-            border-radius: 8px;
+            height: 30px;
+            width: 96px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: var(--text-primary);
+            justify-content: flex-start;
         }
 
-        .nav-logo .brand-mark svg { width: 100%; height: 100%; fill: currentColor; }
+        .nav-logo .brand-mark img { width: 100%; height: 100%; object-fit: contain; }
 
         .nav-logo span {
             background: var(--bg-btn);
@@ -352,7 +351,7 @@
         }
 
         .hero-mark:hover { filter: var(--filter-mark-hover); }
-        .hero-mark svg { width: 62%; height: 62%; fill: currentColor; }
+        .hero-mark img { width: 88%; height: auto; object-fit: contain; }
 
         /* ---------- Title ---------- */
         .title-section { text-align: center; margin-bottom: 24px; padding: 0 10px; }
@@ -701,7 +700,7 @@
             .navbar { flex-direction: column; align-items: stretch; padding: 16px 20px; border-radius: 40px; gap: 14px; }
             .nav-left, .nav-center, .nav-right { justify-content: center; }
             .nav-logo { font-size: 20px; }
-            .nav-logo .brand-mark { height: 32px; width: 32px; }
+            .nav-logo .brand-mark { height: 26px; width: 84px; }
             .nav-links { gap: 4px; justify-content: center; }
             .nav-links a { font-size: 14px; padding: 6px 12px; }
             .nav-links a i { font-size: 16px; }
@@ -740,7 +739,7 @@
             .title-flip-wrapper { width: 120px; }
             .btn { padding: 12px 22px; font-size: 15px; }
             .navbar { padding: 12px 14px; }
-            .nav-logo .brand-mark { height: 28px; width: 28px; }
+            .nav-logo .brand-mark { height: 24px; width: 76px; }
             .nav-links a { font-size: 12px; padding: 4px 8px; }
             .nav-links a i { font-size: 13px; }
             .intro-card .card-image { flex: 0 0 130px; min-height: 110px; }
@@ -762,9 +761,8 @@
         <div class="nav-left">
             <a href="#top" class="nav-logo">
                 <span class="brand-mark" aria-hidden="true">
-                    <svg viewBox="0 0 256 256"><path d="M 256 256 L 128 256 L 0 128 L 128 128 Z"/><path d="M 256 128 L 128 128 L 0 0 L 128 0 Z"/></svg>
+                    <img src="jftw-go.png" alt="" />
                 </span>
-                <span>jftw Go</span>
             </a>
         </div>
 
@@ -795,10 +793,7 @@
                 <div class="hero-glow-outer"></div>
                 <div class="hero-glow"></div>
                 <div class="hero-mark" aria-label="jftw Go 标志">
-                    <svg viewBox="0 0 256 256" aria-hidden="true">
-                        <path d="M 256 256 L 128 256 L 0 128 L 128 128 Z"/>
-                        <path d="M 256 128 L 128 128 L 0 0 L 128 0 Z"/>
-                    </svg>
+                    <img src="jftw-go.png" alt="jftw Go" />
                 </div>
             </div>
         </div>

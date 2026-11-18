@@ -39,6 +39,7 @@ namespace JftwGo.Installer
         {
             Context = new InstallContext { Logger = logger, Api = api, Icons = icons };
             Text = L.Get("app.title");
+            LoadWindowIcon();
 
             _welcome = new WelcomePage();
             _resource = new ResourcePage(Context);
@@ -60,6 +61,18 @@ namespace JftwGo.Installer
                 SetNextEnabled(true);
             };
             Start();
+        }
+
+        /// <summary>从 exe 同目录加载窗口图标，加载失败则使用系统默认图标。</summary>
+        private void LoadWindowIcon()
+        {
+            try
+            {
+                string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.ico");
+                if (System.IO.File.Exists(path))
+                    Icon = new System.Drawing.Icon(path);
+            }
+            catch { }
         }
     }
 }
