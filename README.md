@@ -1,33 +1,42 @@
 # jftw Go
 
-基于 **.NET Framework 4.8 + C# (WinForms)** 的 Windows 桌面工具集。
+基于 **.NET Framework 4.8 + C# (WinForms)** 的 jftw for Windows 分支。
 
-> 这是**两个彼此独立**的软件，各自位于独立目录、独立解决方案，可单独打开、构建、发布和交付；互不依赖、互不引用。二者各自携带一份 Core/UI 源码副本，以保证完全独立。
+> **jftw Go Installer** 和 **jftw Go Direct" 以及 **jftw Go Start1Dev** 是**三个彼此独立**的软件，各自位于独立目录，如果你是开发者，请注意。
 
 | 软件 | 目录 | 用途 | 产物 |
 |---|---|---|---|
 | **jftw Go Installer** | [`Installer/`](Installer/) | 把选定的 jftw Go 资源整合包部署到 U 盘，生成可携带的启动介质 | `jftw Go Installer.exe` |
-| **jftw Go Direct** | [`Direct/`](Direct/) | 无 U 盘、网络较好时，在线下载并解压安装到指定目录并启动 | `jftw Go Direct.exe` |
+| **jftw Go Direct** | [`Direct/`](Direct/) | 无 U 盘、网络较好时，在线下载并解压安装到指定目录并启动 | `jftw Go Direct.exe` |  
+| **jftw Go Start1Dev** | [`Start1Dev/`](Start1Dev/) | 于 jftw ModPack 及 jftw Go 贡献者 的开发工具 | `jftw Go Start1Dev.exe` |  
 
 - **Installer** 不是 jftw Go 的普通安装程序，而是 U 盘资源部署工具；**Direct** 指「无需 U 盘的在线直装/直启」。
-- 两者共享同一资源 API 契约与同一套资源选择界面设计，但作为两个独立软件分别维护。
+- **Start1Dev** 是于 jftw ModPack 及 jftw Go 贡献者 的开发工具，如果你是普通用户请勿下载。  
+- 三者共享同一资源 API 契约与同一套资源选择界面设计，但作为三个独立软件分别维护。
 
 ## 目录结构
 
 ```
 jftwGo/
-├─ Installer/                    ← 独立软件 1：U 盘资源部署器
-│   ├─ jftwGo.sln                （Core + UI + Installer 三个项目）
-│   ├─ JftwGo.Core/              核心类库副本
-│   ├─ JftwGo.UI/                共享 UI 控件副本
-│   ├─ JftwGo.Installer/         主程序（6 页向导）
-│   ├─ packages/                 Newtonsoft.Json.13.0.3（net45）
-│   └─ samples/                  资源列表 JSON 样例
-└─ Direct/                       ← 独立软件 2：在线直装
-    ├─ jftwGo.sln                （Core + UI + Direct 三个项目）
-    ├─ JftwGo.Core/              核心类库副本
-    ├─ JftwGo.UI/                共享 UI 控件副本
-    ├─ JftwGo.Direct/            主程序（5 页向导）
+├─ Installer/
+│   ├─ jftwGo.sln             
+│   ├─ JftwGo.Core/        
+│   ├─ JftwGo.UI/        
+│   ├─ JftwGo.Installer/    
+│   ├─ packages/            
+│   └─ samples/           
+└─ Direct/              
+    ├─ jftwGo.sln           
+    ├─ JftwGo.Core/       
+    ├─ JftwGo.UI/           
+    ├─ JftwGo.Direct/          
+    ├─ packages/
+    └─ samples/
+└─ Direct/              
+    ├─ jftwGo.sln           
+    ├─ JftwGo.Core/       
+    ├─ JftwGo.UI/           
+    ├─ JftwGo.Start1Dev/          
     ├─ packages/
     └─ samples/
 ```
@@ -44,18 +53,24 @@ dotnet build jftwGo.sln -c Release
 cd ..\Direct
 dotnet build jftwGo.sln -c Release
 :: 产物：Direct\JftwGo.Direct\bin\Release\jftw Go Direct.exe
+  
+cd ..\Start1Dev
+dotnet build jftwGo.sln -c Release
+:: 产物：Direct\JftwGo.Direct\bin\Release\Start1Dev_jftw_Go.exe
 ```
 
-也可用 Visual Studio 2019/2022 分别打开两个目录下的 `jftwGo.sln`。目标框架均为 .NET Framework 4.8。
+也可用 Visual Studio 2019/2022 分别打开三个目录下的 `jftwGo.sln`。  
+目标框架均为 .NET Framework 4.8。
 
 各软件的详细说明、UI 页面、API 契约与关键实现见对应目录的 README：
 
 - [Installer 说明](Installer/README.md)
 - [Direct 说明](Direct/README.md)
+- [Start1Dev 说明](Start1Dev/README.md)
 
 ## 多语言
 
-两个软件均内置多语言，语言包为各自目录下的 `lang/*.yaml`：
+三个软件均内置多语言，语言包为各自目录下的 `lang/*.yaml`：
 
 | 语言 | 包名 |
 |---|---|
