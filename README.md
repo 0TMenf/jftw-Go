@@ -2,7 +2,7 @@
 
 基于 **.NET Framework 4.8 + C# (WinForms)** 的 jftw for Windows 分支。
 
-> **jftw Go Installer** 和 **jftw Go Direct" 以及 **jftw Go Start1Dev** 是**三个彼此独立**的软件，各自位于独立目录，如果你是开发者，请注意。
+> **jftw Go Installer** 和 **jftw Go Direct"** 以及 **jftw Go Start1Dev** 是**三个彼此独立**的软件，各自位于独立目录，如果你是开发者，请注意。
 
 | 软件 | 目录 | 用途 | 产物 |
 |---|---|---|---|
